@@ -6,7 +6,9 @@ from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import datetime
-import User
+
+from werkzeug.wrappers import response
+import User, Level
 
 
 app = Flask(__name__)
@@ -14,7 +16,6 @@ app.secret_key = 'myawesomesecretkey'
 app.config["MONGO_URI"] = "mongodb+srv://ronia:2021@cluster0.wdfgt.mongodb.net/snowDB?retryWrites=true&w=majority"
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
-
 
 ## USERS
 
@@ -56,25 +57,13 @@ def update_user(_id):
     return response
 
 
-# LEVELS
-
-
+## LEVELS
 @app.route('/levels', methods=['POST'])
 def create_level():
     # Receiving Data
-    name = request.json['name']
-
-    if name:
-        id = db.levels.insert(
-            {'name': name})
-        response = jsonify({
-            '_id': str(id),
-            'name': name
-        })
-        response.status_code = 201
-        return response
-    else:
-        return not_found()
+    new_level = Level.Level(request)
+    response = new_level.add()
+    return response
 
 
 @app.route('/levels', methods=['GET'])
@@ -95,25 +84,20 @@ def get_level(id):
 @app.route('/levels/<id>', methods=['DELETE'])
 def delete_level(id):
     db.levels.delete_one({'_id': ObjectId(id)})
-    response = jsonify({'message': 'Level' + id + ' Deleted Successfully'})
+    response = jsonify({'message': 'Level' + id + ' Deleted Successfully'}) # TODO: do not delete if this level is used
     response.status_code = 200
     return response
 
 
 @app.route('/levels/<_id>', methods=['PUT'])
 def update_level(_id):
-    name = request.json['name']
-    if name and _id:
-        db.levels.update_one(
-            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {'name': name}})
-        response = jsonify({'message': 'Level' + _id + 'Updated Successfuly'})
-        response.status_code = 200
-        return response
-    else:
-        return not_found()
+    new_level = Level.Level(request)
+    new_level.update(_id)
+    return response
 
 
-# TASKS
+
+## TASKS
 @app.route('/tasks', methods=['POST'])
 def create_task():
     # Receiving Data
