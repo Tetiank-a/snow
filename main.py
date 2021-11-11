@@ -16,29 +16,13 @@ mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
 
-@app.route("/")
-def hello():
-    return "Hello World!"
-
-# USERS
-
+## USERS
 
 @app.route('/users', methods=['POST'])
 def create_user():
     # Receiving Data
-    user = User.User(request)
-    response = user.transform(db)
-    if (response.status_code != 201):
-        return response
-    user.id = db.users.insert({'username': user.username, 'email': user.email, 'level_id': user.level_id, 'password': user.password})
-    response = jsonify({
-        '_id': str(user.id),
-        'username': user.username,
-        'password': user.password,
-        'email': user.email,
-        'level_id': str(user.level_id)
-    })
-    response.status_code = 201
+    new_user = User.User(request)
+    response = new_user.add()
     return response
 
 
@@ -67,19 +51,10 @@ def delete_user(id):
 
 @app.route('/users/<_id>', methods=['PUT'])
 def update_user(_id):
-    username = request.json['username']
-    email = request.json['email']
-    level_id = request.json['level_id']
-    password = request.json['password']
-    if username and email and password and _id:
-        hashed_password = generate_password_hash(password)
-        db.users.update_one(
-            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {'username': username, 'email': email, 'level_id': level_id, 'password': hashed_password}})
-        response = jsonify({'message': 'User' + _id + 'Updated Successfuly'})
-        response.status_code = 200
-        return response
-    else:
-        return not_found()
+    new_user = User.User(request)
+    response = new_user.update(_id)
+    return response
+
 
 # LEVELS
 

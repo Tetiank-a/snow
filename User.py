@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 
 from flask.json import jsonify
 from werkzeug.security import generate_password_hash
-# from .main import db
+import main
 
 
 class User:
@@ -14,8 +14,7 @@ class User:
         self.level_id = request.json['level_id']
         self.password = request.json['password']
 
-
-    def isValid(self, db):
+    def isValid(self):
         if not (self.username and self.email and self.level_id and self.password):
             response = jsonify({'message': 'All fields must be set'})
             response.status_code = 400
@@ -31,21 +30,51 @@ class User:
             response = jsonify({'message': 'level_id is not a valid ObjectId'})
             response.status_code = 400
         else:
-            level = db.levels.find_one({'_id': ObjectId(self.level_id), })
+            level = main.db.levels.find_one({'_id': ObjectId(self.level_id), })
             if not level:
-              response = jsonify({'message': 'Such level does not exist'})
-              response.status_code = 400
+                response = jsonify({'message': 'Such level does not exist'})
+                response.status_code = 400
         if len(self.password) < 8 or len(self.password) > 30:
-            response = jsonify({'message': 'Password must be longer than 8 symbols, but less than 30'})
+            response = jsonify(
+                {'message': 'Password must be longer than 8 symbols, but less than 30'})
             response.status_code = 400
         if len(self.username) < 2 or len(self.username) > 20:
-            response = jsonify({'message': 'Username must be longer than 2 symbols, but less than 20'})
+            response = jsonify(
+                {'message': 'Username must be longer than 2 symbols, but less than 20'})
             response.status_code = 400
         return response
 
-
-    def transform(self, db):
-        response = self.isValid(db)
-        if (response.status_code == 201):
+    def add(self):
+        response = self.isValid()
+        if not (response.status_code == 400):
             self.password = generate_password_hash(self.password)
+            self.id = main.db.users.insert(
+                {'username': self.username, 'email': self.email, 'level_id': self.level_id, 'password': self.password})
+            response = jsonify({
+                '_id': str(self.id),
+                'username': self.username,
+                'password': self.password,
+                'email': self.email,
+                'level_id': str(self.level_id)
+            })
+        return response
+
+    def update(self, _id):
+        response = self.isValid()
+        if not _id:
+            return main.not_found()
+        if not (response.status_code == 400):
+            self.password = generate_password_hash(self.password)
+            main.db.users.update_one(
+                {'_id': ObjectId(_id['$oid'])
+                 if '$oid' in _id else ObjectId(_id)},
+                {'$set': {
+                    'username': self.username,
+                    'email': self.email,
+                    'level_id': self.level_id,
+                    'password': str(self.hashed_password)
+                }
+                })
+        response = jsonify({'message': 'User' + _id + 'Updated Successfuly'})
+        response.status_code = 200
         return response
