@@ -6,37 +6,14 @@ from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import datetime
+import User
+
 
 app = Flask(__name__)
 app.secret_key = 'myawesomesecretkey'
 app.config["MONGO_URI"] = "mongodb+srv://ronia:2021@cluster0.wdfgt.mongodb.net/snowDB?retryWrites=true&w=majority"
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
-
-# email validation
-regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
-
-def validate_user(username, email, level_id, password):
-    response = jsonify({'message': 'User is valid'})
-    response.status_code = 201
-    if(not re.fullmatch(regex, email)):
-        response = jsonify({'message': 'Invalid email'})
-        response.status_code = 400
-    if not ObjectId.is_valid(level_id):
-        response = jsonify({'message': 'level_id is not a valid ObjectId'})
-        response.status_code = 400
-    else:
-        level = db.levels.find_one({'_id': ObjectId(level_id), })
-        if not level:
-            response = jsonify({'message': 'Such level does not exist'})
-            response.status_code = 400
-    if len(password) < 8 or len(password) > 30:
-        response = jsonify({'message': 'Password must be longer than 8 symbols, but less than 30'})
-        response.status_code = 400
-    if len(username) < 2 or len(username) > 20:
-        response = jsonify({'message': 'Username must be longer than 2 symbols, but less than 20'})
-        response.status_code = 400
-    return response
 
 
 @app.route("/")
@@ -49,29 +26,20 @@ def hello():
 @app.route('/users', methods=['POST'])
 def create_user():
     # Receiving Data
-    username = request.json['username']
-    email = request.json['email']
-    level_id = request.json['level_id']
-    password = request.json['password']
-
-    if username and email and level_id and password:
-        val_response = validate_user(username, email, level_id, password)
-        if (val_response.status_code == 400):
-            return val_response
-        hashed_password = generate_password_hash(password)
-        id = db.users.insert(
-            {'username': username, 'email': email, 'level_id': level_id, 'password': hashed_password})
-        response = jsonify({
-            '_id': str(id),
-            'username': username,
-            'password': password,
-            'email': email,
-            'level_id': str(level_id)
-        })
-        response.status_code = 201
+    user = User.User(request)
+    response = user.transform(db)
+    if (response.status_code != 201):
         return response
-    else:
-        return not_found()
+    user.id = db.users.insert({'username': user.username, 'email': user.email, 'level_id': user.level_id, 'password': user.password})
+    response = jsonify({
+        '_id': str(user.id),
+        'username': user.username,
+        'password': user.password,
+        'email': user.email,
+        'level_id': str(user.level_id)
+    })
+    response.status_code = 201
+    return response
 
 
 @app.route('/users', methods=['GET'])
