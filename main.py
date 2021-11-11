@@ -8,7 +8,7 @@ import re
 import datetime
 
 from werkzeug.wrappers import response
-import User, Level
+from classes import User, Level
 
 
 app = Flask(__name__)
@@ -17,7 +17,9 @@ app.config["MONGO_URI"] = "mongodb+srv://ronia:2021@cluster0.wdfgt.mongodb.net/s
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
+
 ## USERS
+
 
 @app.route('/users', methods=['POST'])
 def create_user():
