@@ -1,8 +1,11 @@
+import bson
 from flask_pymongo import PyMongo
 from flask import Flask, jsonify, request, Response
 from bson import json_util
 from bson.objectid import ObjectId
 from werkzeug.security import generate_password_hash, check_password_hash
+import re
+import datetime
 
 app = Flask(__name__)
 app.secret_key = 'myawesomesecretkey'
@@ -10,11 +13,39 @@ app.config["MONGO_URI"] = "mongodb+srv://ronia:2021@cluster0.wdfgt.mongodb.net/s
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
+# email validation
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+def validate_user(username, email, level_id, password):
+    response = jsonify({'message': 'User is valid'})
+    response.status_code = 201
+    if(not re.fullmatch(regex, email)):
+        response = jsonify({'message': 'Invalid email'})
+        response.status_code = 400
+    if not ObjectId.is_valid(level_id):
+        response = jsonify({'message': 'level_id is not a valid ObjectId'})
+        response.status_code = 400
+    else:
+        level = db.levels.find_one({'_id': ObjectId(level_id), })
+        if not level:
+            response = jsonify({'message': 'Such level does not exist'})
+            response.status_code = 400
+    if len(password) < 8 or len(password) > 30:
+        response = jsonify({'message': 'Password must be longer than 8 symbols, but less than 30'})
+        response.status_code = 400
+    if len(username) < 2 or len(username) > 20:
+        response = jsonify({'message': 'Username must be longer than 2 symbols, but less than 20'})
+        response.status_code = 400
+    return response
+
+
 @app.route("/")
 def hello():
     return "Hello World!"
 
 # USERS
+
+
 @app.route('/users', methods=['POST'])
 def create_user():
     # Receiving Data
@@ -24,6 +55,9 @@ def create_user():
     password = request.json['password']
 
     if username and email and level_id and password:
+        val_response = validate_user(username, email, level_id, password)
+        if (val_response.status_code == 400):
+            return val_response
         hashed_password = generate_password_hash(password)
         id = db.users.insert(
             {'username': username, 'email': email, 'level_id': level_id, 'password': hashed_password})
@@ -32,7 +66,7 @@ def create_user():
             'username': username,
             'password': password,
             'email': email,
-            'level_id': level_id
+            'level_id': str(level_id)
         })
         response.status_code = 201
         return response
@@ -77,9 +111,11 @@ def update_user(_id):
         response.status_code = 200
         return response
     else:
-      return not_found()
+        return not_found()
 
 # LEVELS
+
+
 @app.route('/levels', methods=['POST'])
 def create_level():
     # Receiving Data
@@ -131,7 +167,247 @@ def update_level(_id):
         response.status_code = 200
         return response
     else:
-      return not_found()
+        return not_found()
+
+
+# TASKS
+@app.route('/tasks', methods=['POST'])
+def create_task():
+    # Receiving Data
+    name = request.json['name']
+    link = request.json['link']
+    level_id = request.json['level_id']
+    rec_id = request.json['rec_id']
+    user_id = request.json['user_id']
+    text = request.json['text']
+
+    if link and level_id and rec_id and user_id and text and name:
+        id = db.tasks.insert({
+            'name': name, 
+            'link': link,
+            'level_id': level_id,
+            'rec_id': rec_id,
+            'user_id': user_id,
+            'text': text
+            })
+        response = jsonify({
+            '_id': str(id),
+            'name': name,
+            'link': link,
+            'level_id': level_id,
+            'rec_id': rec_id,
+            'user_id': user_id,
+            'text': text
+             })
+        response.status_code = 201
+        return response
+    else:
+        return not_found()
+
+
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    tasks = db.tasks.find()
+    response = json_util.dumps(tasks)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/tasks/<id>', methods=['GET'])
+def get_task(id):
+    print(id)
+    task = db.tasks.find_one({'_id': ObjectId(id), })
+    response = json_util.dumps(task)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/tasks/<id>', methods=['DELETE'])
+def delete_task(id):
+    db.tasks.delete_one({'_id': ObjectId(id)})
+    response = jsonify({'message': 'Task' + id + ' Deleted Successfully'})
+    response.status_code = 200
+    return response
+
+
+@app.route('/tasks/<_id>', methods=['PUT'])
+def update_task(_id):
+    name = request.json['name']
+    link = request.json['link']
+    level_id = request.json['level_id']
+    rec_id = request.json['rec_id']
+    user_id = request.json['user_id']
+    text = request.json['text']
+    if name and link and level_id and rec_id and user_id and text and _id:
+        db.tasks.update_one(
+            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
+                'name': name, 
+                'link': link,
+                'level_id': level_id,
+                'rec_id': rec_id,
+                'user_id': user_id,
+                'text': text
+                }})
+        response = jsonify({'message': 'Task' + _id + 'Updated Successfuly'})
+        response.status_code = 200
+        return response
+    else:
+        return not_found()
+
+# RECORDS
+
+@app.route('/records', methods=['POST'])
+def create_record():
+    # Receiving Data
+    xspeed = request.json['xspeed']
+    yspeed = request.json['yspeed']
+    zspeed = request.json['zspeed']
+    angle = request.json['angle']
+
+    if xspeed and yspeed and zspeed and angle:
+        id = db.records.insert({
+            'xspeed' : [xspeed,],
+            'yspeed' : [yspeed,],
+            'zspeed' : [zspeed,],
+            'angle' : [angle,]
+            })
+        response = jsonify({
+            '_id': str(id),
+            'xspeed' : xspeed,
+            'yspeed' : yspeed,
+            'zspeed' : zspeed,
+            'angle' : angle
+             })
+        response.status_code = 201
+        return response
+    else:
+        return not_found()
+
+
+@app.route('/records', methods=['GET'])
+def get_records():
+    records = db.records.find()
+    response = json_util.dumps(records)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/records/<id>', methods=['GET'])
+def get_record(id):
+    print(id)
+    record = db.records.find_one({'_id': ObjectId(id), })
+    response = json_util.dumps(record)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/records/<id>', methods=['DELETE'])
+def delete_record(id):
+    db.records.delete_one({'_id': ObjectId(id)})
+    response = jsonify({'message': 'Record' + id + ' Deleted Successfully'})
+    response.status_code = 200
+    return response
+
+
+@app.route('/records/<_id>', methods=['PUT'])
+def update_record(_id):
+    xspeed = request.json['xspeed']
+    yspeed = request.json['yspeed']
+    zspeed = request.json['zspeed']
+    angle = request.json['angle']
+
+    if xspeed and yspeed and zspeed and angle:
+        db.records.update_one(
+            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$push': {
+                'xspeed' : xspeed,
+                'yspeed' : yspeed,
+                'zspeed' : zspeed,
+                'angle' : angle
+                }})
+        response = jsonify({'message': 'Record' + _id + 'Updated Successfuly'})
+        response.status_code = 200
+        return response
+    else:
+        return not_found()
+
+# SESSIONS
+@app.route('/sessions', methods=['POST'])
+def create_session():
+    # Receiving Data
+    rec_id = request.json['rec_id']
+    instructor_id = request.json['instructor_id']
+    task_id = request.json['task_id']
+    user_id = request.json['user_id']
+    dtstart = datetime.datetime.strptime(request.json['dtstart'], '%Y-%m-%d %H:%M:%S.%f')
+    dtfinish = datetime.datetime.strptime(request.json['dtfinish'], '%Y-%m-%d %H:%M:%S.%f')
+
+    if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
+        id = db.sessions.insert({
+            'rec_id': rec_id, 
+            'instructor_id': instructor_id,
+            'task_id': task_id,
+            'user_id': user_id,
+            'dtstart': dtstart,
+            'dtfinish': dtfinish
+            })
+        response = jsonify({
+            '_id': str(id),
+            'rec_id': rec_id, 
+            'instructor_id': instructor_id,
+            'task_id': task_id,
+            'user_id': user_id,
+            'dtstart': dtstart,
+            'dtfinish': dtfinish
+             })
+        response.status_code = 201
+        return response
+    else:
+        return not_found()
+
+
+@app.route('/sessions', methods=['GET'])
+def get_sessions():
+    sessions = db.sessions.find()
+    response = json_util.dumps(sessions)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/sessions/<id>', methods=['GET'])
+def get_session(id):
+    print(id)
+    session = db.sessions.find_one({'_id': ObjectId(id), })
+    response = json_util.dumps(session)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/sessions/<id>', methods=['DELETE'])
+def delete_session(id):
+    db.sessions.delete_one({'_id': ObjectId(id)})
+    response = jsonify({'message': 'Session' + id + ' Deleted Successfully'})
+    response.status_code = 200
+    return response
+
+
+@app.route('/sessions/<_id>', methods=['PUT'])
+def update_session(_id):
+    rec_id = request.json['rec_id']
+    instructor_id = request.json['instructor_id']
+    task_id = request.json['task_id']
+    user_id = request.json['user_id']
+    dtstart = datetime.datetime.strptime(request.json['dtstart'], '%Y-%m-%d %H:%M:%S.%f')
+    dtfinish = datetime.datetime.strptime(request.json['dtfinish'], '%Y-%m-%d %H:%M:%S.%f')
+    if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
+        db.sessions.update_one(
+            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
+                'rec_id': rec_id, 
+                'instructor_id': instructor_id,
+                'task_id': task_id,
+                'user_id': user_id,
+                'dtstart': dtstart,
+                'dtfinish': dtfinish
+                }})
+        response = jsonify({'message': 'Session' + _id + 'Updated Successfuly'})
+        response.status_code = 200
+        return response
+    else:
+        return not_found()
+
 
 @app.errorhandler(404)
 def not_found(error=None):
