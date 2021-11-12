@@ -8,7 +8,7 @@ import re
 import datetime
 
 from werkzeug.wrappers import response
-from classes import User, Level
+from classes import User, Level, Record, Session, Task
 
 
 app = Flask(__name__)
@@ -186,29 +186,9 @@ def update_task(_id):
 @app.route('/records', methods=['POST'])
 def create_record():
     # Receiving Data
-    xspeed = request.json['xspeed']
-    yspeed = request.json['yspeed']
-    zspeed = request.json['zspeed']
-    angle = request.json['angle']
-
-    if xspeed and yspeed and zspeed and angle:
-        id = db.records.insert({
-            'xspeed' : [xspeed,],
-            'yspeed' : [yspeed,],
-            'zspeed' : [zspeed,],
-            'angle' : [angle,]
-            })
-        response = jsonify({
-            '_id': str(id),
-            'xspeed' : xspeed,
-            'yspeed' : yspeed,
-            'zspeed' : zspeed,
-            'angle' : angle
-             })
-        response.status_code = 201
-        return response
-    else:
-        return not_found()
+    new_record = Record.Record(request)
+    response = new_record.add()
+    return response
 
 
 @app.route('/records', methods=['GET'])
@@ -236,24 +216,10 @@ def delete_record(id):
 
 @app.route('/records/<_id>', methods=['PUT'])
 def update_record(_id):
-    xspeed = request.json['xspeed']
-    yspeed = request.json['yspeed']
-    zspeed = request.json['zspeed']
-    angle = request.json['angle']
+    new_record = Record.Record(request)
+    response = new_record.update(_id)
+    return response
 
-    if xspeed and yspeed and zspeed and angle:
-        db.records.update_one(
-            {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$push': {
-                'xspeed' : xspeed,
-                'yspeed' : yspeed,
-                'zspeed' : zspeed,
-                'angle' : angle
-                }})
-        response = jsonify({'message': 'Record' + _id + 'Updated Successfuly'})
-        response.status_code = 200
-        return response
-    else:
-        return not_found()
 
 # SESSIONS
 @app.route('/sessions', methods=['POST'])

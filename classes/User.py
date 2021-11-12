@@ -8,13 +8,23 @@ import main
 
 class User:
 
+    valid = True
+
     def __init__(self, request):
-        self.username = request.json['username']
-        self.email = request.json['email']
-        self.level_id = request.json['level_id']
-        self.password = request.json['password']
+        if (('username' in request.json) and ('email' in request.json) and
+                ('level_id' in request.json) and ('password' in request.json)):
+            self.username = request.json['username']
+            self.email = request.json['email']
+            self.level_id = request.json['level_id']
+            self.password = request.json['password']
+        else:
+            self.valid = False
 
     def isValid(self):
+        if not self.valid:
+            response = jsonify({'message': 'One or more fields are not sent'})
+            response.status_code = 400
+            return response
         if not (self.username and self.email and self.level_id and self.password):
             response = jsonify({'message': 'All fields must be set'})
             response.status_code = 400
@@ -49,7 +59,8 @@ class User:
         if not (response.status_code == 400):
             self.password = generate_password_hash(self.password)
             self.id = main.db.users.insert(
-                {'username': self.username, 'email': self.email, 'level_id': self.level_id, 'password': self.password})
+                {'username': self.username, 'email': self.email,
+                 'level_id': self.level_id, 'password': self.password})
             response = jsonify({
                 '_id': str(self.id),
                 'username': self.username,
@@ -66,15 +77,14 @@ class User:
         if not (response.status_code == 400):
             self.password = generate_password_hash(self.password)
             main.db.users.update_one(
-                {'_id': ObjectId(_id['$oid'])
-                 if '$oid' in _id else ObjectId(_id)},
-                {'$set': {
+                {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
                     'username': self.username,
                     'email': self.email,
                     'level_id': self.level_id,
-                    'password': str(self.hashed_password)
+                    'password': self.hashed_password
                 }
                 })
-        response = jsonify({'message': 'User' + _id + 'Updated Successfuly'})
-        response.status_code = 200
+            response = jsonify(
+                {'message': 'User' + _id + 'Updated Successfuly'})
+            response.status_code = 200
         return response

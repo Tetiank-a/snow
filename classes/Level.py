@@ -8,10 +8,18 @@ import main
 
 class Level:
 
+    valid = True
+
     def __init__(self, request):
+        if not ('name' in request.json):
+            self.valid = False
         self.name = request.json['name']
 
     def isValid(self):
+        if not self.valid:
+            response = jsonify({'message': 'One or more fields are not sent'})
+            response.status_code = 400
+            return response
         if not (self.name):
             response = jsonify({'message': 'All fields must be set'})
             response.status_code = 400
@@ -30,6 +38,7 @@ class Level:
                 'name': self.name
             })
         return response
+
 
     def update(self, _id):
         response = self.isValid()
