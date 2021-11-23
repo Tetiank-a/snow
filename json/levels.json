@@ -1,3 +1,32 @@
-{
-    "name": "invalid"
-}
+[
+  {
+    "_id": {
+      "$oid": "61895c563013d4f443f192ef"
+    },
+    "name": "elementary"
+  },
+  {
+    "_id": {
+      "$oid": "61895c633013d4f443f192f0"
+    },
+    "name": "intermediate"
+  },
+  {
+    "_id": {
+      "$oid": "61895c6b3013d4f443f192f1"
+    },
+    "name": "advanced"
+  },
+  {
+    "_id": {
+      "$oid": "618d534a45a9d78fc3db9d86"
+    },
+    "name": "instructor"
+  },
+  {
+    "_id": {
+      "$oid": "618d542ac941570e0f112a21"
+    },
+    "name": "kid"
+  }
+]

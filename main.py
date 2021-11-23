@@ -1,14 +1,10 @@
-import bson
 from flask_pymongo import PyMongo
 from flask import Flask, jsonify, request, Response
 from bson import json_util
 from bson.objectid import ObjectId
-from werkzeug.security import generate_password_hash, check_password_hash
-import re
-import datetime
 
 from werkzeug.wrappers import response
-from classes import User, Level, Record, Session, Task
+from classes import User, Level, Record, Advice, Session, Task
 
 
 app = Flask(__name__)
@@ -229,8 +225,8 @@ def create_session():
     instructor_id = request.json['instructor_id']
     task_id = request.json['task_id']
     user_id = request.json['user_id']
-    dtstart = datetime.datetime.strptime(request.json['dtstart'], '%Y-%m-%d %H:%M:%S.%f')
-    dtfinish = datetime.datetime.strptime(request.json['dtfinish'], '%Y-%m-%d %H:%M:%S.%f')
+    dtstart = request.json['dtstart']
+    dtfinish = request.json['dtfinish']
 
     if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
         id = db.sessions.insert({
@@ -285,8 +281,9 @@ def update_session(_id):
     instructor_id = request.json['instructor_id']
     task_id = request.json['task_id']
     user_id = request.json['user_id']
-    dtstart = datetime.datetime.strptime(request.json['dtstart'], '%Y-%m-%d %H:%M:%S.%f')
-    dtfinish = datetime.datetime.strptime(request.json['dtfinish'], '%Y-%m-%d %H:%M:%S.%f')
+    dtstart = request.json['dtstart']
+    dtfinish = request.json['dtfinish']
+
     if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
         db.sessions.update_one(
             {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
@@ -312,4 +309,64 @@ def not_found(error=None):
     }
     response = jsonify(message)
     response.status_code = 404
+    return response
+
+## ADVICE (ML)
+
+@app.route('/advice', methods=['GET']) # TODO: take id
+def recieve_advice():
+    new_advice = Advice.Advice(request)
+    # response = new_advice.get_advice()
+    response = json_util.dumps(new_advice)
+    return response
+
+
+## BACK UP
+
+@app.route('/backup', methods=['GET'])
+def save_all():
+    
+    ## Sessions
+    a1 = db.sessions.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/sessions.json', 'w') as file:
+        file.write(res)
+    
+    ## Levels
+    a1 = db.levels.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/levels.json', 'w') as file:
+        file.write(res)
+
+            
+    ## Records
+    a1 = db.records.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/records.json', 'w') as file:
+        file.write(res)
+
+            
+    ## Tasks
+    a1 = db.tasks.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/tasks.json', 'w') as file:
+        file.write(res)
+
+            
+    ## Users
+    a1 = db.users.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/users.json', 'w') as file:
+        file.write(res)
+
+            
+    ## Advice
+    a1 = db.advice.find()
+    res = json_util.dumps(a1, indent = 2)
+    with open('json/advice.json', 'w') as file:
+        file.write(res)
+
+    
+    response = jsonify({'message': 'Backup completed Successfuly'})
+    response.status_code = 200
     return response
