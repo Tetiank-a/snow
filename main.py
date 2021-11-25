@@ -2,7 +2,7 @@ from flask_pymongo import PyMongo
 from flask import Flask, jsonify, request, Response
 from bson import json_util
 from bson.objectid import ObjectId
-
+from DB.UsersT import do
 from werkzeug.wrappers import response
 from classes import User, Level, Record, Advice, Session, Task
 
@@ -366,5 +366,12 @@ def save_all():
         file.write(res)
 
     response = jsonify({'message': 'Backup completed Successfuly'})
+    response.status_code = 200
+    return response
+
+@app.route('/create', methods=['GET'])  # TODO: take id
+def create_table():
+    # do()
+    response = jsonify({'message': 'DB created'})
     response.status_code = 200
     return response
