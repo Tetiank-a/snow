@@ -14,7 +14,7 @@ mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
 
-## USERS
+# USERS
 
 
 @app.route('/users', methods=['POST'])
@@ -55,7 +55,7 @@ def update_user(_id):
     return response
 
 
-## LEVELS
+# LEVELS
 @app.route('/levels', methods=['POST'])
 def create_level():
     # Receiving Data
@@ -82,7 +82,8 @@ def get_level(id):
 @app.route('/levels/<id>', methods=['DELETE'])
 def delete_level(id):
     db.levels.delete_one({'_id': ObjectId(id)})
-    response = jsonify({'message': 'Level' + id + ' Deleted Successfully'}) # TODO: do not delete if this level is used
+    # TODO: do not delete if this level is used
+    response = jsonify({'message': 'Level' + id + ' Deleted Successfully'})
     response.status_code = 200
     return response
 
@@ -94,8 +95,7 @@ def update_level(_id):
     return response
 
 
-
-## TASKS
+# TASKS
 @app.route('/tasks', methods=['POST'])
 def create_task():
     # Receiving Data
@@ -108,13 +108,13 @@ def create_task():
 
     if link and level_id and rec_id and user_id and text and name:
         id = db.tasks.insert({
-            'name': name, 
+            'name': name,
             'link': link,
             'level_id': level_id,
             'rec_id': rec_id,
             'user_id': user_id,
             'text': text
-            })
+        })
         response = jsonify({
             '_id': str(id),
             'name': name,
@@ -123,7 +123,7 @@ def create_task():
             'rec_id': rec_id,
             'user_id': user_id,
             'text': text
-             })
+        })
         response.status_code = 201
         return response
     else:
@@ -164,13 +164,13 @@ def update_task(_id):
     if name and link and level_id and rec_id and user_id and text and _id:
         db.tasks.update_one(
             {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
-                'name': name, 
+                'name': name,
                 'link': link,
                 'level_id': level_id,
                 'rec_id': rec_id,
                 'user_id': user_id,
                 'text': text
-                }})
+            }})
         response = jsonify({'message': 'Task' + _id + 'Updated Successfuly'})
         response.status_code = 200
         return response
@@ -178,6 +178,7 @@ def update_task(_id):
         return not_found()
 
 # RECORDS
+
 
 @app.route('/records', methods=['POST'])
 def create_record():
@@ -230,22 +231,22 @@ def create_session():
 
     if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
         id = db.sessions.insert({
-            'rec_id': rec_id, 
+            'rec_id': rec_id,
             'instructor_id': instructor_id,
             'task_id': task_id,
             'user_id': user_id,
             'dtstart': dtstart,
             'dtfinish': dtfinish
-            })
+        })
         response = jsonify({
             '_id': str(id),
-            'rec_id': rec_id, 
+            'rec_id': rec_id,
             'instructor_id': instructor_id,
             'task_id': task_id,
             'user_id': user_id,
             'dtstart': dtstart,
             'dtfinish': dtfinish
-             })
+        })
         response.status_code = 201
         return response
     else:
@@ -287,14 +288,15 @@ def update_session(_id):
     if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
         db.sessions.update_one(
             {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
-                'rec_id': rec_id, 
+                'rec_id': rec_id,
                 'instructor_id': instructor_id,
                 'task_id': task_id,
                 'user_id': user_id,
                 'dtstart': dtstart,
                 'dtfinish': dtfinish
-                }})
-        response = jsonify({'message': 'Session' + _id + 'Updated Successfuly'})
+            }})
+        response = jsonify(
+            {'message': 'Session' + _id + 'Updated Successfuly'})
         response.status_code = 200
         return response
     else:
@@ -313,60 +315,56 @@ def not_found(error=None):
 
 ## ADVICE (ML)
 
-@app.route('/advice', methods=['GET']) # TODO: take id
+
+@app.route('/advice', methods=['POST'])  # TODO: take id
 def recieve_advice():
     new_advice = Advice.Advice(request)
-    # response = new_advice.get_advice()
-    response = json_util.dumps(new_advice)
+    response = new_advice.get_advice()
+    #response = json_util.dumps(result_data)
     return response
 
 
-## BACK UP
+# BACK UP
 
 @app.route('/backup', methods=['GET'])
 def save_all():
-    
-    ## Sessions
+
+    # Sessions
     a1 = db.sessions.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/sessions.json', 'w') as file:
         file.write(res)
-    
-    ## Levels
+
+    # Levels
     a1 = db.levels.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/levels.json', 'w') as file:
         file.write(res)
 
-            
-    ## Records
+    # Records
     a1 = db.records.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/records.json', 'w') as file:
         file.write(res)
 
-            
-    ## Tasks
+    # Tasks
     a1 = db.tasks.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/tasks.json', 'w') as file:
         file.write(res)
 
-            
-    ## Users
+    # Users
     a1 = db.users.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/users.json', 'w') as file:
         file.write(res)
 
-            
-    ## Advice
+    # Advice
     a1 = db.advice.find()
-    res = json_util.dumps(a1, indent = 2)
+    res = json_util.dumps(a1, indent=2)
     with open('json/advice.json', 'w') as file:
         file.write(res)
 
-    
     response = jsonify({'message': 'Backup completed Successfuly'})
     response.status_code = 200
     return response
