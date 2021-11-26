@@ -17,7 +17,7 @@ db = mongodb_client.db
 # USERS
 
 
-@app.route('/users', methods=['POST'])
+@app.route('/api/users', methods=['POST'])
 def create_user():
     # Receiving Data
     new_user = User.User(request)
@@ -25,14 +25,14 @@ def create_user():
     return response
 
 
-@app.route('/users', methods=['GET'])
+@app.route('/api/users', methods=['GET'])
 def get_users():
     users = db.users.find()
     response = json_util.dumps(users)
     return Response(response, mimetype="application/json")
 
 
-@app.route('/users/<id>', methods=['GET'])
+@app.route('/api/users/<id>', methods=['GET'])
 def get_user(id):
     print(id)
     user = db.users.find_one({'_id': ObjectId(id), })
@@ -40,7 +40,7 @@ def get_user(id):
     return Response(response, mimetype="application/json")
 
 
-@app.route('/users/<id>', methods=['DELETE'])
+@app.route('/api/users/<id>', methods=['DELETE'])
 def delete_user(id):
     db.users.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'User' + id + ' Deleted Successfully'})
@@ -48,7 +48,7 @@ def delete_user(id):
     return response
 
 
-@app.route('/users/<_id>', methods=['PUT'])
+@app.route('/api/users/<_id>', methods=['PUT'])
 def update_user(_id):
     new_user = User.User(request)
     response = new_user.update(_id)
@@ -56,7 +56,7 @@ def update_user(_id):
 
 
 # LEVELS
-@app.route('/levels', methods=['POST'])
+@app.route('/api/levels', methods=['POST'])
 def create_level():
     # Receiving Data
     new_level = Level.Level(request)
@@ -64,14 +64,14 @@ def create_level():
     return response
 
 
-@app.route('/levels', methods=['GET'])
+@app.route('/api/levels', methods=['GET'])
 def get_levels():
     levels = db.levels.find()
     response = json_util.dumps(levels)
     return Response(response, mimetype="application/json")
 
 
-@app.route('/levels/<id>', methods=['GET'])
+@app.route('/api/levels/<id>', methods=['GET'])
 def get_level(id):
     print(id)
     level = db.levels.find_one({'_id': ObjectId(id), })
@@ -79,7 +79,7 @@ def get_level(id):
     return Response(response, mimetype="application/json")
 
 
-@app.route('/levels/<id>', methods=['DELETE'])
+@app.route('/api/levels/<id>', methods=['DELETE'])
 def delete_level(id):
     db.levels.delete_one({'_id': ObjectId(id)})
     # TODO: do not delete if this level is used
@@ -88,7 +88,7 @@ def delete_level(id):
     return response
 
 
-@app.route('/levels/<_id>', methods=['PUT'])
+@app.route('/api/levels/<_id>', methods=['PUT'])
 def update_level(_id):
     new_level = Level.Level(request)
     new_level.update(_id)
@@ -96,7 +96,7 @@ def update_level(_id):
 
 
 # TASKS
-@app.route('/tasks', methods=['POST'])
+@app.route('/api/tasks', methods=['POST'])
 def create_task():
     # Receiving Data
     name = request.json['name']
@@ -130,14 +130,14 @@ def create_task():
         return not_found()
 
 
-@app.route('/tasks', methods=['GET'])
+@app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     tasks = db.tasks.find()
     response = json_util.dumps(tasks)
     return Response(response, mimetype="application/json")
 
 
-@app.route('/tasks/<id>', methods=['GET'])
+@app.route('/api/tasks/<id>', methods=['GET'])
 def get_task(id):
     print(id)
     task = db.tasks.find_one({'_id': ObjectId(id), })
@@ -145,7 +145,7 @@ def get_task(id):
     return Response(response, mimetype="application/json")
 
 
-@app.route('/tasks/<id>', methods=['DELETE'])
+@app.route('/api/tasks/<id>', methods=['DELETE'])
 def delete_task(id):
     db.tasks.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Task' + id + ' Deleted Successfully'})
@@ -153,7 +153,7 @@ def delete_task(id):
     return response
 
 
-@app.route('/tasks/<_id>', methods=['PUT'])
+@app.route('/api/tasks/<_id>', methods=['PUT'])
 def update_task(_id):
     name = request.json['name']
     link = request.json['link']
@@ -180,7 +180,7 @@ def update_task(_id):
 # RECORDS
 
 
-@app.route('/records', methods=['POST'])
+@app.route('/api/records', methods=['POST'])
 def create_record():
     # Receiving Data
     new_record = Record.Record(request)
@@ -188,14 +188,14 @@ def create_record():
     return response
 
 
-@app.route('/records', methods=['GET'])
+@app.route('/api/records', methods=['GET'])
 def get_records():
     records = db.records.find()
     response = json_util.dumps(records)
     return Response(response, mimetype="application/json")
 
 
-@app.route('/records/<id>', methods=['GET'])
+@app.route('/api/records/<id>', methods=['GET'])
 def get_record(id):
     print(id)
     record = db.records.find_one({'_id': ObjectId(id), })
@@ -203,7 +203,7 @@ def get_record(id):
     return Response(response, mimetype="application/json")
 
 
-@app.route('/records/<id>', methods=['DELETE'])
+@app.route('/api/records/<id>', methods=['DELETE'])
 def delete_record(id):
     db.records.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Record' + id + ' Deleted Successfully'})
@@ -211,7 +211,7 @@ def delete_record(id):
     return response
 
 
-@app.route('/records/<_id>', methods=['PUT'])
+@app.route('/api/records/<_id>', methods=['PUT'])
 def update_record(_id):
     new_record = Record.Record(request)
     response = new_record.update(_id)
@@ -219,7 +219,7 @@ def update_record(_id):
 
 
 # SESSIONS
-@app.route('/sessions', methods=['POST'])
+@app.route('/api/sessions', methods=['POST'])
 def create_session():
     # Receiving Data
     rec_id = request.json['rec_id']
@@ -253,14 +253,14 @@ def create_session():
         return not_found()
 
 
-@app.route('/sessions', methods=['GET'])
+@app.route('/api/sessions', methods=['GET'])
 def get_sessions():
     sessions = db.sessions.find()
     response = json_util.dumps(sessions)
     return Response(response, mimetype="application/json")
 
 
-@app.route('/sessions/<id>', methods=['GET'])
+@app.route('/api/sessions/<id>', methods=['GET'])
 def get_session(id):
     print(id)
     session = db.sessions.find_one({'_id': ObjectId(id), })
@@ -268,7 +268,7 @@ def get_session(id):
     return Response(response, mimetype="application/json")
 
 
-@app.route('/sessions/<id>', methods=['DELETE'])
+@app.route('/api/sessions/<id>', methods=['DELETE'])
 def delete_session(id):
     db.sessions.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Session' + id + ' Deleted Successfully'})
@@ -276,7 +276,7 @@ def delete_session(id):
     return response
 
 
-@app.route('/sessions/<_id>', methods=['PUT'])
+@app.route('/api/sessions/<_id>', methods=['PUT'])
 def update_session(_id):
     rec_id = request.json['rec_id']
     instructor_id = request.json['instructor_id']
@@ -316,7 +316,7 @@ def not_found(error=None):
 ## ADVICE (ML)
 
 
-@app.route('/advice', methods=['POST'])  # TODO: take id
+@app.route('/api/advice', methods=['POST'])  # TODO: take id
 def recieve_advice():
     new_advice = Advice.Advice(request)
     response = new_advice.get_advice()
@@ -326,7 +326,7 @@ def recieve_advice():
 
 # BACK UP
 
-@app.route('/backup', methods=['GET'])
+@app.route('/api/backup', methods=['GET'])
 def save_all():
 
     # Sessions
@@ -369,7 +369,7 @@ def save_all():
     response.status_code = 200
     return response
 
-@app.route('/create', methods=['GET'])  # TODO: take id
+@app.route('/api/create', methods=['GET'])  # TODO: take id
 def create_table():
     # do()
     response = jsonify({'message': 'DB created'})
