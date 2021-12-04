@@ -5,11 +5,16 @@ from bson.objectid import ObjectId
 from DB.UsersT import do
 from werkzeug.wrappers import response
 from classes import User, Level, Record, Advice, Session, Task
+import os
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 app.secret_key = 'myawesomesecretkey'
-app.config["MONGO_URI"] = "mongodb+srv://ronia:2021@cluster0.wdfgt.mongodb.net/snowDB?retryWrites=true&w=majority"
+load_dotenv()
+app.config["MONGO_URI"] = f'mongodb+srv://ronia:{os.environ.get("password")}'\
+              '@cluster0.wdfgt.mongodb.net/snowDB?'\
+              'retryWrites=true&w=majority'
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
