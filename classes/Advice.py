@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from flask.json import jsonify
 from predict.add import predict
-import main
+import app.main
 
 
 class Advice:
@@ -10,7 +10,7 @@ class Advice:
         self.time = request.json['time']
 
     def get_advice(self):
-        record = main.db.records.find_one({'_id': ObjectId(self.record_id), })
+        record = app.main.db.records.find_one({'_id': ObjectId(self.record_id), })
         if not record:
             response = jsonify({'message': 'Such record does not exist'})
             response.status_code = 400

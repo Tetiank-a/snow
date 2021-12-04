@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 
 from flask.json import jsonify
 from werkzeug.security import generate_password_hash
-import main
+import app.main as main
 
 
 class Level:
@@ -11,9 +11,10 @@ class Level:
     valid = True
 
     def __init__(self, request):
-        if not ('name' in request.json):
+        if ('name' in request.json):
+            self.name = request.json['name']
+        else:
             self.valid = False
-        self.name = request.json['name']
 
     def isValid(self):
         if not self.valid:

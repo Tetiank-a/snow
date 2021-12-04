@@ -1,1 +1,1 @@
-web: gunicorn gettingstarted.wsgi app_basic:app
+web: gunicorn wsgi:app

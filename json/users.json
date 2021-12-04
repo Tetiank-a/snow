@@ -1,0 +1,74 @@
+[
+  {
+    "_id": {
+      "$oid": "61895a2cf6d8c7603f2cf84a"
+    },
+    "username": "bob",
+    "email": "bob@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$CrqL29RDcD1JQbMf$35ea596db4db4010b32fe3d80ddaf0c4b496422e7ebc731bfdd9ae935738a559"
+  },
+  {
+    "_id": {
+      "$oid": "61895a57f6d8c7603f2cf84b"
+    },
+    "username": "haley",
+    "email": "smile@gmail.com",
+    "level_id": "61895c6b3013d4f443f192f1",
+    "password": "pbkdf2:sha256:260000$65QkQX8dtVBgpbGO$57674de5b440d964f8517c9ac86e3e70fccd5daf2633b73476a6822cc75d5117"
+  },
+  {
+    "_id": {
+      "$oid": "618ce312191fbc0d4f698983"
+    },
+    "username": "Anna",
+    "email": "asas@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$URSm4gFPSDe5hjRo$a163d78c5d575903592c35f79dacee1038b3a80c9f44bbe3dece86d9635087f6"
+  },
+  {
+    "_id": {
+      "$oid": "618ce68882f200e97184cd07"
+    },
+    "username": "Kristin",
+    "email": "krist@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$brByKODxhaiGVOjl$409c68704c65dfe4574e951572fdc2138e25d9cce05f982c3abca17fa19276fd"
+  },
+  {
+    "_id": {
+      "$oid": "618d334eb31a42072af6d8d2"
+    },
+    "username": "Anna",
+    "email": "asas@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$RaG6V3l2IjHKEaNa$6b7bd03e90d6d835ea8b15f3fd2ecb866d82aa22fcfd473327b37e92d94cbebb"
+  },
+  {
+    "_id": {
+      "$oid": "618d3a30d2199f305e5ff272"
+    },
+    "username": "Paul",
+    "email": "paul@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$M5PncgUpdYeDUbdk$fe342541daf25afa1621bad2f17a3488bfe9ff53669c45301237086c5f41755c"
+  },
+  {
+    "_id": {
+      "$oid": "618d4a11d1382d4ad5a1e5bf"
+    },
+    "username": "Mara",
+    "email": "mara@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$NqBmEU3pCdOAJ7EW$e1add351cbbbc418f7c08b39d9ccedf63fd42a4fb1cd9fdb69b7df1cab075b63"
+  },
+  {
+    "_id": {
+      "$oid": "618e2fc02def4bbbfb2241ee"
+    },
+    "username": "Anna",
+    "email": "asghj@gmail.com",
+    "level_id": "61895c563013d4f443f192ef",
+    "password": "pbkdf2:sha256:260000$3d15PGaJCRQFa3nm$2b86b664005d359adbd1d6508ed1f47fc52a5a9939a5801687df50b5bf5fbe66"
+  }
+]

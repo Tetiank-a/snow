@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 
 from flask.json import jsonify
-import main
+import app.main
 
 
 class Record:
@@ -41,7 +41,7 @@ class Record:
         response = self.isValid()
         if not (response.status_code == 400):
             if self.xspeed and self.yspeed and self.zspeed and self.angle:
-                self.id = main.db.records.insert({
+                self.id = app.main.db.records.insert({
                     'xspeed': [self.xspeed, ],
                     'yspeed': [self.yspeed, ],
                     'zspeed': [self.zspeed, ],
@@ -62,9 +62,9 @@ class Record:
         response = self.isValid()
         if not (response.status_code == 400):
             if not _id:
-                return main.not_found()
+                return app.main.not_found()
             if self.xspeed and self.yspeed and self.zspeed and self.angle:
-                main.db.records.update_one(
+                app.main.db.records.update_one(
                     {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$push': {
                         'xspeed': self.xspeed,
                         'yspeed': self.yspeed,

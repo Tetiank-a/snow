@@ -4,7 +4,7 @@ from bson.codec_options import CodecOptions
 from bson.binary import STANDARD
 
 from pymongo.write_concern import WriteConcern
-import main
+import app.main
 
 def do():
     jsonUsers = {
@@ -140,32 +140,32 @@ def do():
     }
 
     
-    main.db.create_collection(
+    app.main.db.create_collection(
         "users1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),
         validator={"$jsonSchema": jsonUsers})
-    main.db.create_collection(
+    app.main.db.create_collection(
         "levels1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),
         validator={"$jsonSchema": jsonLevels})
-    main.db.create_collection(
+    app.main.db.create_collection(
         "advice1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),
         validator={"$jsonSchema": jsonAdvice})
-    main.db.create_collection(
+    app.main.db.create_collection(
         "records1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),
         validator={"$jsonSchema": jsonRecords})
-    main.db.create_collection(
+    app.main.db.create_collection(
         "tasks1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),
         validator={"$jsonSchema": jsonTasks})
-    main.db.create_collection(
+    app.main.db.create_collection(
         "sessions1",
         codec_options=CodecOptions(uuid_representation=STANDARD),
         write_concern=WriteConcern(w="majority"),

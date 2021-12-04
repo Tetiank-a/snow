@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 
 from flask.json import jsonify
 from werkzeug.security import generate_password_hash
-import main
+import app.main
 
 
 class User:
@@ -40,7 +40,7 @@ class User:
             response = jsonify({'message': 'level_id is not a valid ObjectId'})
             response.status_code = 400
         else:
-            level = main.db.levels.find_one({'_id': ObjectId(self.level_id), })
+            level = app.main.db.levels.find_one({'_id': ObjectId(self.level_id), })
             if not level:
                 response = jsonify({'message': 'Such level does not exist'})
                 response.status_code = 400
@@ -58,7 +58,7 @@ class User:
         response = self.isValid()
         if not (response.status_code == 400):
             self.password = generate_password_hash(self.password)
-            self.id = main.db.users.insert(
+            self.id = app.main.db.users.insert(
                 {'username': self.username, 'email': self.email,
                  'level_id': self.level_id, 'password': self.password})
             response = jsonify({
@@ -73,10 +73,10 @@ class User:
     def update(self, _id):
         response = self.isValid()
         if not _id:
-            return main.not_found()
+            return app.main.not_found()
         if not (response.status_code == 400):
             self.password = generate_password_hash(self.password)
-            main.db.users.update_one(
+            app.main.db.users.update_one(
                 {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
                     'username': self.username,
                     'email': self.email,
