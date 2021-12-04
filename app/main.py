@@ -34,8 +34,7 @@ def create_user():
 def get_users():
     users = db.users.find()
     response = json_util.dumps(users)
-    return "<h1>hello</h1>"
-    # return Response(response, mimetype="application/json")
+    return Response(response, mimetype="application/json")
 
 
 @app.route('/api/users/<id>', methods=['GET'])
