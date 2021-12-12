@@ -13,13 +13,26 @@ app = Flask(__name__)
 app.secret_key = 'myawesomesecretkey'
 load_dotenv()
 app.config["MONGO_URI"] = f'mongodb+srv://ronia:{os.environ.get("password")}'\
-              '@cluster0.wdfgt.mongodb.net/snowDB?'\
-              'retryWrites=true&w=majority'
+    '@cluster0.wdfgt.mongodb.net/snowDB?'\
+    'retryWrites=true&w=majority'
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
 
 # USERS
+
+@app.route('/api/signup', methods=['POST'])
+def create_user():
+    # Receiving Data
+    if (('password' in request.json) and
+        ('password_repeat' in request.json) and
+            (request.json['password'] == request.json['password_repeat'])):
+        new_user = User.User(request)
+        response = new_user.add()
+    else:
+        response = response = jsonify({'message': 'Passwords do not match'})
+        response.status_code = 400
+    return response
 
 
 @app.route('/api/users', methods=['POST'])
@@ -374,6 +387,7 @@ def save_all():
     response.status_code = 200
     return response
 
+
 @app.route('/api/create', methods=['GET'])  # TODO: take id
 def create_table():
     # do()
@@ -382,9 +396,12 @@ def create_table():
     return response
 
 # A welcome message to test our server
+
+
 @app.route('/')
 def index():
     return "<h1>Welcome to our server !!</h1>"
+
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
