@@ -22,7 +22,7 @@ db = mongodb_client.db
 # USERS
 
 @app.route('/api/signup', methods=['POST'])
-def create_user():
+def signup():
     # Receiving Data
     if (('password' in request.json) and
         ('password_repeat' in request.json) and
