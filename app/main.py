@@ -7,9 +7,11 @@ from werkzeug.wrappers import response
 from classes import User, Level, Record, Advice, Session, Task
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = 'myawesomesecretkey'
 load_dotenv()
 app.config["MONGO_URI"] = f'mongodb+srv://ronia:{os.environ.get("password")}'\
