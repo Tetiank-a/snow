@@ -81,7 +81,7 @@ class User:
                     'username': self.username,
                     'email': self.email,
                     'level_id': self.level_id,
-                    'password': self.hashed_password
+                    'password': self.password
                 }
                 })
             response = jsonify(

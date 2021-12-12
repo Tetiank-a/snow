@@ -2,6 +2,7 @@ from flask_pymongo import PyMongo
 from flask import Flask, jsonify, request, Response
 from bson import json_util
 from bson.objectid import ObjectId
+from werkzeug.security import check_password_hash, generate_password_hash
 from DB.UsersT import do
 from werkzeug.wrappers import response
 from classes import User, Level, Record, Advice, Session, Task
@@ -32,7 +33,30 @@ def signup():
         new_user = User.User(request)
         response = new_user.add()
     else:
-        response = response = jsonify({'message': 'Passwords do not match'})
+        response = jsonify({'message': 'Passwords do not match'})
+        response.status_code = 400
+    return response
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    # Receiving Data
+    if (('password' in request.json) and
+        ('email' in request.json)):
+        # hashed_password = generate_password_hash(request.json['password'])
+        new_user = db.users.find_one({"email": request.json['email']})
+        print(new_user['password'])
+        print(generate_password_hash(request.json['password']))
+        print(request.json['password'])
+        
+       # print(check_password_hash("pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12", str("qwerty123")))
+        if (new_user != None and check_password_hash(new_user['password'], request.json['password'])):
+            response = jsonify({'_id': str(new_user['_id'])})
+            response.status_code = 200
+        else:
+            response = jsonify({'message': str("no such user")})
+            response.status_code = 400
+    else:
+        response = jsonify({'message': 'Email or password field is empty'})
         response.status_code = 400
     return response
 
