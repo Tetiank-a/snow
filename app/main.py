@@ -9,6 +9,7 @@ from classes import User, Level, Record, Advice, Session, Task
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 
 
 app = Flask(__name__)
@@ -21,6 +22,8 @@ app.config["MONGO_URI"] = f'mongodb+srv://ronia:{os.environ.get("password")}'\
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
+app.config["JWT_SECRET_KEY"] = "ronald" 
+jwt = JWTManager(app)
 
 # USERS
 
@@ -37,6 +40,7 @@ def signup():
         response.status_code = 400
     return response
 
+
 @app.route('/api/login', methods=['POST'])
 def login():
     # Receiving Data
@@ -50,7 +54,8 @@ def login():
         
        # print(check_password_hash("pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12", str("qwerty123")))
         if (new_user != None and check_password_hash(new_user['password'], request.json['password'])):
-            response = jsonify({'_id': str(new_user['_id'])})
+            access_token = create_access_token(identity=str(new_user['_id']))
+            response = jsonify({'token': access_token,'_id': str(new_user['_id'])})
             response.status_code = 200
         else:
             response = jsonify({'message': str("no such user")})
@@ -70,6 +75,7 @@ def create_user():
 
 
 @app.route('/api/users', methods=['GET'])
+@jwt_required()
 def get_users():
     users = db.users.find()
     response = json_util.dumps(users)
@@ -77,6 +83,7 @@ def get_users():
 
 
 @app.route('/api/users/<id>', methods=['GET'])
+@jwt_required()
 def get_user(id):
     print(id)
     user = db.users.find_one({'_id': ObjectId(id), })
@@ -85,6 +92,7 @@ def get_user(id):
 
 
 @app.route('/api/users/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(id):
     db.users.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'User' + id + ' Deleted Successfully'})
@@ -93,6 +101,7 @@ def delete_user(id):
 
 
 @app.route('/api/users/<_id>', methods=['PUT'])
+@jwt_required()
 def update_user(_id):
     new_user = User.User(request)
     response = new_user.update(_id)
@@ -101,6 +110,7 @@ def update_user(_id):
 
 # LEVELS
 @app.route('/api/levels', methods=['POST'])
+@jwt_required()
 def create_level():
     # Receiving Data
     new_level = Level.Level(request)
@@ -109,6 +119,7 @@ def create_level():
 
 
 @app.route('/api/levels', methods=['GET'])
+@jwt_required()
 def get_levels():
     levels = db.levels.find()
     response = json_util.dumps(levels)
@@ -116,6 +127,7 @@ def get_levels():
 
 
 @app.route('/api/levels/<id>', methods=['GET'])
+@jwt_required()
 def get_level(id):
     print(id)
     level = db.levels.find_one({'_id': ObjectId(id), })
@@ -124,6 +136,7 @@ def get_level(id):
 
 
 @app.route('/api/levels/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_level(id):
     db.levels.delete_one({'_id': ObjectId(id)})
     # TODO: do not delete if this level is used
@@ -133,6 +146,7 @@ def delete_level(id):
 
 
 @app.route('/api/levels/<_id>', methods=['PUT'])
+@jwt_required()
 def update_level(_id):
     new_level = Level.Level(request)
     new_level.update(_id)
@@ -141,6 +155,7 @@ def update_level(_id):
 
 # TASKS
 @app.route('/api/tasks', methods=['POST'])
+@jwt_required()
 def create_task():
     # Receiving Data
     name = request.json['name']
@@ -175,13 +190,16 @@ def create_task():
 
 
 @app.route('/api/tasks', methods=['GET'])
+@jwt_required()
 def get_tasks():
+    current_user = get_jwt_identity()
     tasks = db.tasks.find()
     response = json_util.dumps(tasks)
     return Response(response, mimetype="application/json")
 
 
 @app.route('/api/tasks/<id>', methods=['GET'])
+@jwt_required()
 def get_task(id):
     print(id)
     task = db.tasks.find_one({'_id': ObjectId(id), })
@@ -190,6 +208,7 @@ def get_task(id):
 
 
 @app.route('/api/tasks/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_task(id):
     db.tasks.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Task' + id + ' Deleted Successfully'})
@@ -198,6 +217,7 @@ def delete_task(id):
 
 
 @app.route('/api/tasks/<_id>', methods=['PUT'])
+@jwt_required()
 def update_task(_id):
     name = request.json['name']
     link = request.json['link']
@@ -225,6 +245,7 @@ def update_task(_id):
 
 
 @app.route('/api/records', methods=['POST'])
+@jwt_required()
 def create_record():
     # Receiving Data
     new_record = Record.Record(request)
@@ -233,6 +254,7 @@ def create_record():
 
 
 @app.route('/api/records', methods=['GET'])
+@jwt_required()
 def get_records():
     records = db.records.find()
     response = json_util.dumps(records)
@@ -240,6 +262,7 @@ def get_records():
 
 
 @app.route('/api/records/<id>', methods=['GET'])
+@jwt_required()
 def get_record(id):
     print(id)
     record = db.records.find_one({'_id': ObjectId(id), })
@@ -248,6 +271,7 @@ def get_record(id):
 
 
 @app.route('/api/records/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_record(id):
     db.records.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Record' + id + ' Deleted Successfully'})
@@ -256,6 +280,7 @@ def delete_record(id):
 
 
 @app.route('/api/records/<_id>', methods=['PUT'])
+@jwt_required()
 def update_record(_id):
     new_record = Record.Record(request)
     response = new_record.update(_id)
@@ -264,6 +289,7 @@ def update_record(_id):
 
 # SESSIONS
 @app.route('/api/sessions', methods=['POST'])
+@jwt_required()
 def create_session():
     # Receiving Data
     rec_id = request.json['rec_id']
@@ -298,6 +324,7 @@ def create_session():
 
 
 @app.route('/api/sessions', methods=['GET'])
+@jwt_required()
 def get_sessions():
     sessions = db.sessions.find()
     response = json_util.dumps(sessions)
@@ -305,6 +332,7 @@ def get_sessions():
 
 
 @app.route('/api/sessions/<id>', methods=['GET'])
+@jwt_required()
 def get_session(id):
     print(id)
     session = db.sessions.find_one({'_id': ObjectId(id), })
@@ -313,6 +341,7 @@ def get_session(id):
 
 
 @app.route('/api/sessions/<id>', methods=['DELETE'])
+@jwt_required()
 def delete_session(id):
     db.sessions.delete_one({'_id': ObjectId(id)})
     response = jsonify({'message': 'Session' + id + ' Deleted Successfully'})
@@ -321,6 +350,7 @@ def delete_session(id):
 
 
 @app.route('/api/sessions/<_id>', methods=['PUT'])
+@jwt_required()
 def update_session(_id):
     rec_id = request.json['rec_id']
     instructor_id = request.json['instructor_id']
@@ -361,6 +391,7 @@ def not_found(error=None):
 
 
 @app.route('/api/advice', methods=['POST'])  # TODO: take id
+@jwt_required()
 def recieve_advice():
     new_advice = Advice.Advice(request)
     response = new_advice.get_advice()
@@ -371,6 +402,7 @@ def recieve_advice():
 # BACK UP
 
 @app.route('/api/backup', methods=['GET'])
+@jwt_required()
 def save_all():
 
     # Sessions
@@ -415,6 +447,7 @@ def save_all():
 
 
 @app.route('/api/create', methods=['GET'])  # TODO: take id
+@jwt_required()
 def create_table():
     # do()
     response = jsonify({'message': 'DB created'})
