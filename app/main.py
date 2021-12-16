@@ -79,6 +79,17 @@ def create_user():
 def get_users():
     users = db.users.find()
     response = json_util.dumps(users)
+    json_dict = json_util.loads(response)
+    i = 0
+    if 'level_id' in json_dict:
+        del json_dict['level_id']
+        if 'password' in json_dict:
+            del json_dict['password']
+    for x in json_dict:
+        level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
+        json_dict[i]['level'] = {'_id' : str(level['_id']), 'name' : level['name']}
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
