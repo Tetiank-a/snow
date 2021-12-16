@@ -135,7 +135,7 @@ def delete_user(id):
 def update_user(_id):
     username = request.json['username']
     email = request.json['email']
-    level_id = request.json['level_id']
+    level_id = request.json['level']['_id']
     password = str(db.users.find_one({'_id': ObjectId(_id), })['password'])
     db.users.update_one(
         {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
