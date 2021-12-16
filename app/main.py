@@ -104,7 +104,6 @@ def get_user(id):
 
     users = db.users.find({'_id': ObjectId(id), })
     response = json_util.dumps(users)
-    print(response)
     json_dict = json_util.loads(response)
     i = 0
 
@@ -167,6 +166,12 @@ def create_level():
 def get_levels():
     levels = db.levels.find()
     response = json_util.dumps(levels)
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
@@ -239,6 +244,12 @@ def get_tasks():
     current_user = get_jwt_identity()
     tasks = db.tasks.find()
     response = json_util.dumps(tasks)
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
@@ -302,6 +313,12 @@ def create_record():
 def get_records():
     records = db.records.find()
     response = json_util.dumps(records)
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
@@ -372,6 +389,12 @@ def create_session():
 def get_sessions():
     sessions = db.sessions.find()
     response = json_util.dumps(sessions)
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
