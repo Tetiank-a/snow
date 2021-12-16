@@ -1,13 +1,288 @@
-[
-  {
-    "_id": {
-      "$oid": "618e32b48b0178deefc6b454"
+{
+  "sessions": [
+    {
+      "_id": {
+        "$oid": "618e32b48b0178deefc6b454"
+      },
+      "rec_id": "618d00baf0b0a5a5b9b77c6e",
+      "instructor_id": "61895a57f6d8c7603f2cf84b",
+      "task_id": "618cc39aaa7f00f49a0366ed",
+      "user_id": "61895a2cf6d8c7603f2cf84a",
+      "dtstart": "2021-05-18 16:00:00",
+      "dtfinish": "2021-05-18 16:00:00"
+    }
+  ],
+  "levels": [
+    {
+      "_id": {
+        "$oid": "61895c563013d4f443f192ef"
+      },
+      "name": "elementary"
     },
-    "rec_id": "618d00baf0b0a5a5b9b77c6e",
-    "instructor_id": "61895a57f6d8c7603f2cf84b",
-    "task_id": "618cc39aaa7f00f49a0366ed",
-    "user_id": "61895a2cf6d8c7603f2cf84a",
-    "dtstart": "2021-05-18 16:00:00",
-    "dtfinish": "2021-05-18 16:00:00"
-  }
-]
+    {
+      "_id": {
+        "$oid": "61895c633013d4f443f192f0"
+      },
+      "name": "intermediate"
+    },
+    {
+      "_id": {
+        "$oid": "61895c6b3013d4f443f192f1"
+      },
+      "name": "advanced"
+    },
+    {
+      "_id": {
+        "$oid": "618d534a45a9d78fc3db9d86"
+      },
+      "name": "instructor"
+    },
+    {
+      "_id": {
+        "$oid": "618d542ac941570e0f112a21"
+      },
+      "name": "kid"
+    },
+    {
+      "_id": {
+        "$oid": "61bbb6743d9564d411140f27"
+      },
+      "name": "admin"
+    }
+  ],
+  "advice": [
+    {
+      "_id": {
+        "$oid": "619f706c915b391ba1e46362"
+      },
+      "record_id": "618d00baf0b0a5a5b9b77c6e",
+      "time": 1
+    }
+  ],
+  "records": [
+    {
+      "_id": {
+        "$oid": "618d00baf0b0a5a5b9b77c6e"
+      },
+      "xspeed": [
+        "130",
+        "130"
+      ],
+      "yspeed": [
+        "250",
+        "250"
+      ],
+      "zspeed": [
+        "30",
+        "30"
+      ],
+      "angle": [
+        "110",
+        "110"
+      ]
+    },
+    {
+      "_id": {
+        "$oid": "61a0e61c4ef3260dd32dc297"
+      },
+      "xspeed": [
+        "123"
+      ],
+      "yspeed": [
+        "14"
+      ],
+      "zspeed": [
+        "123"
+      ],
+      "angle": [
+        "10"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "_id": {
+        "$oid": "618cc39aaa7f00f49a0366ed"
+      },
+      "name": "Basics",
+      "link": "https://www.youtube.com/watch?v=SqpVHk2O778",
+      "level_id": "61895c563013d4f443f192ef",
+      "rec_id": "1",
+      "user_id": "61895a2cf6d8c7603f2cf84a",
+      "text": "short video about basic movements"
+    }
+  ],
+  "users": [
+    {
+      "_id": {
+        "$oid": "61895a2cf6d8c7603f2cf84a"
+      },
+      "username": "Instructor Bob",
+      "email": "ziro@gmail.com",
+      "level_id": "618d542ac941570e0f112a21",
+      "password": "pbkdf2:sha256:260000$CrqL29RDcD1JQbMf$35ea596db4db4010b32fe3d80ddaf0c4b496422e7ebc731bfdd9ae935738a559"
+    },
+    {
+      "_id": {
+        "$oid": "61895a57f6d8c7603f2cf84b"
+      },
+      "username": "haley",
+      "email": "smile@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$65QkQX8dtVBgpbGO$57674de5b440d964f8517c9ac86e3e70fccd5daf2633b73476a6822cc75d5117"
+    },
+    {
+      "_id": {
+        "$oid": "618ce312191fbc0d4f698983"
+      },
+      "username": "Anna",
+      "email": "asas@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$URSm4gFPSDe5hjRo$a163d78c5d575903592c35f79dacee1038b3a80c9f44bbe3dece86d9635087f6"
+    },
+    {
+      "_id": {
+        "$oid": "618ce68882f200e97184cd07"
+      },
+      "username": "Kristin",
+      "email": "krist@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$brByKODxhaiGVOjl$409c68704c65dfe4574e951572fdc2138e25d9cce05f982c3abca17fa19276fd"
+    },
+    {
+      "_id": {
+        "$oid": "618d334eb31a42072af6d8d2"
+      },
+      "username": "Anna",
+      "email": "asas@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$RaG6V3l2IjHKEaNa$6b7bd03e90d6d835ea8b15f3fd2ecb866d82aa22fcfd473327b37e92d94cbebb"
+    },
+    {
+      "_id": {
+        "$oid": "618d3a30d2199f305e5ff272"
+      },
+      "username": "Paul",
+      "email": "paul@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$M5PncgUpdYeDUbdk$fe342541daf25afa1621bad2f17a3488bfe9ff53669c45301237086c5f41755c"
+    },
+    {
+      "_id": {
+        "$oid": "618d4a11d1382d4ad5a1e5bf"
+      },
+      "username": "Mara",
+      "email": "mara@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$NqBmEU3pCdOAJ7EW$e1add351cbbbc418f7c08b39d9ccedf63fd42a4fb1cd9fdb69b7df1cab075b63"
+    },
+    {
+      "_id": {
+        "$oid": "618e2fc02def4bbbfb2241ee"
+      },
+      "username": "Anna",
+      "email": "asghj@gmail.com",
+      "level_id": "61895c563013d4f443f192ef",
+      "password": "pbkdf2:sha256:260000$3d15PGaJCRQFa3nm$2b86b664005d359adbd1d6508ed1f47fc52a5a9939a5801687df50b5bf5fbe66"
+    },
+    {
+      "_id": {
+        "$oid": "61b5d189a3172fa4a534d643"
+      },
+      "username": "test",
+      "email": "test@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$7HptJ70bBERoTdf9$ae53762771adc924c79a2dfa01ea4252d9b6a2f99f9f1ab5e85456215ee4b6ef"
+    },
+    {
+      "_id": {
+        "$oid": "61b5d1c4a3172fa4a534d644"
+      },
+      "username": "test",
+      "email": "test@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$qEqqoLqNODsDhrmf$2d3a769760ced4351e2c7c4156deb4ece1c571f4cce6407d55aecb58ac62df29"
+    },
+    {
+      "_id": {
+        "$oid": "61b5efb1e2f5f861546ef2d6"
+      },
+      "username": "Tania",
+      "email": "tania@magic.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$A5qrzwYLTd7szx53$f5ce41e5c27043d359b516fffb25f331fdd7ac0d3dc3607f8738a03ee1cbfe8a"
+    },
+    {
+      "_id": {
+        "$oid": "61b60719b1851bed55272c4c"
+      },
+      "username": "mykhailo",
+      "email": "mykhailo@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12"
+    },
+    {
+      "_id": {
+        "$oid": "61b60885df1cdef37940b8f2"
+      },
+      "username": "mykhailo",
+      "email": "mykhailo@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$OS4OoNdee8aP4nwK$6b4699dcfc54a1df5b9003a750acfe1de7e5e601cb00ea2820223b8dfd6a6da4"
+    },
+    {
+      "_id": {
+        "$oid": "61b61636bd85176e9bb89d1d"
+      },
+      "username": "ziro",
+      "email": "ziro@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$iZmqAZ4Z7LZpvN5s$01d145e76038dca124617bb4945f23de767fc1ab657422f56c4ac960193f007f"
+    },
+    {
+      "_id": {
+        "$oid": "61b61984ae9336e273c21b1b"
+      },
+      "username": "one",
+      "email": "one@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$wGEbyvVHbbw8kYb6$892665eb20662bc6b2a0577bd6a3cea64f0e20f9526dec96bc3d52522d1ee95f"
+    },
+    {
+      "_id": {
+        "$oid": "61b8c27ff41bcefdf695c440"
+      },
+      "username": "four",
+      "email": "4@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$Qa0JPixe8c0M9WTx$02f67e488110743f00b342aa1e1aca40b4e7abf275821cf34ee1ee4abf785b4a"
+    },
+    {
+      "_id": {
+        "$oid": "61b8c300f41bcefdf695c441"
+      },
+      "username": "five",
+      "email": "5@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$tUyQnTJ6TYoouzkr$2a6b8ba1f42813a6262a13ef7118ec0ab5ab4bc7ae74d2308b6c1f5683cf2c0f"
+    },
+    {
+      "_id": {
+        "$oid": "61b8da31f41bcefdf695c442"
+      },
+      "username": "Snow",
+      "email": "snow@winter.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$I2CSzJQuvtfOfgok$732a53ef41dbe8b196632526c0dd8fcf1baf575ff000393c22dc0c7480eca580"
+    },
+    {
+      "_id": {
+        "$oid": "61b909212d597dfcb38f4190"
+      },
+      "username": "Try tokens",
+      "email": "token@gmail.com",
+      "level_id": "61895c6b3013d4f443f192f1",
+      "password": "pbkdf2:sha256:260000$Dpv1QWNPI4Lp8hq1$4dbdfcbd7b043f8e1ed516849b818554e352673006f1156dff68ac68a303fe6e"
+    }
+  ]
+}

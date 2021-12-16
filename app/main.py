@@ -474,43 +474,34 @@ def save_all():
 
     # Sessions
     a1 = db.sessions.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/sessions.json', 'w') as file:
-        file.write(res)
+    res = json_util.dumps(a1)
+    d1 = json_util.loads(res)
 
-    # Levels
     a1 = db.levels.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/levels.json', 'w') as file:
-        file.write(res)
+    res = json_util.dumps(a1)
+    d2 = json_util.loads(res)
 
-    # Records
-    a1 = db.records.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/records.json', 'w') as file:
-        file.write(res)
-
-    # Tasks
-    a1 = db.tasks.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/tasks.json', 'w') as file:
-        file.write(res)
-
-    # Users
-    a1 = db.users.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/users.json', 'w') as file:
-        file.write(res)
-
-    # Advice
     a1 = db.advice.find()
-    res = json_util.dumps(a1, indent=2)
-    with open('json/advice.json', 'w') as file:
-        file.write(res)
+    res = json_util.dumps(a1)
+    d3 = json_util.loads(res)
 
-    response = jsonify({'message': 'Backup completed Successfuly'})
-    response.status_code = 200
-    return response
+    a1 = db.records.find()
+    res = json_util.dumps(a1)
+    d4 = json_util.loads(res)
+
+    a1 = db.tasks.find()
+    res = json_util.dumps(a1)
+    d5 = json_util.loads(res)
+
+    a1 = db.users.find()
+    res = json_util.dumps(a1)
+    d6 = json_util.loads(res)
+
+
+    ans = {'sessions' : d1, 'levels' : d2, 'advice' : d3, 'records' : d4, 'tasks' : d5, 'users' : d6}
+    res = json_util.dumps(ans)
+
+    return Response(res, mimetype="application/json")
 
 
 @app.route('/api/create', methods=['GET'])  # TODO: take id
