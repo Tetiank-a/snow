@@ -22,10 +22,11 @@ app.config["MONGO_URI"] = f'mongodb+srv://ronia:{os.environ.get("password")}'\
 mongodb_client = PyMongo(app)
 db = mongodb_client.db
 
-app.config["JWT_SECRET_KEY"] = "ronald" 
+app.config["JWT_SECRET_KEY"] = "ronald"
 jwt = JWTManager(app)
 
 # USERS
+
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
@@ -45,17 +46,18 @@ def signup():
 def login():
     # Receiving Data
     if (('password' in request.json) and
-        ('email' in request.json)):
+            ('email' in request.json)):
         # hashed_password = generate_password_hash(request.json['password'])
         new_user = db.users.find_one({"email": request.json['email']})
         print(new_user['password'])
         print(generate_password_hash(request.json['password']))
         print(request.json['password'])
-        
+
        # print(check_password_hash("pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12", str("qwerty123")))
         if (new_user != None and check_password_hash(new_user['password'], request.json['password'])):
             access_token = create_access_token(identity=str(new_user['_id']))
-            response = jsonify({'token': access_token,'_id': str(new_user['_id'])})
+            response = jsonify(
+                {'token': access_token, '_id': str(new_user['_id'])})
             response.status_code = 200
         else:
             response = jsonify({'message': str("no such user")})
@@ -81,13 +83,15 @@ def get_users():
     response = json_util.dumps(users)
     json_dict = json_util.loads(response)
     i = 0
-    if 'level_id' in json_dict:
-        del json_dict['level_id']
-        if 'password' in json_dict:
-            del json_dict['password']
+
     for x in json_dict:
         level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
-        json_dict[i]['level'] = {'_id' : str(level['_id']), 'name' : level['name']}
+        json_dict[i]['level'] = {'_id': str(
+            level['_id']), 'name': level['name']}
+        if 'level_id' in json_dict[i]:
+            del json_dict[i]['level_id']
+        if 'password' in json_dict[i]:
+            del json_dict[i]['password']
         i = i + 1
     response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
@@ -96,9 +100,23 @@ def get_users():
 @app.route('/api/users/<id>', methods=['GET'])
 @jwt_required()
 def get_user(id):
-    print(id)
-    user = db.users.find_one({'_id': ObjectId(id), })
-    response = json_util.dumps(user)
+
+    users = db.users.find({'_id': ObjectId(id), })
+    response = json_util.dumps(users)
+    print(response)
+    json_dict = json_util.loads(response)
+    i = 0
+
+    for x in json_dict:
+        level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
+        json_dict[i]['level'] = {'_id': str(
+            level['_id']), 'name': level['name']}
+        if 'level_id' in json_dict[i]:
+            del json_dict[i]['level_id']
+        if 'password' in json_dict[i]:
+            del json_dict[i]['password']
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
@@ -114,8 +132,21 @@ def delete_user(id):
 @app.route('/api/users/<_id>', methods=['PUT'])
 @jwt_required()
 def update_user(_id):
-    new_user = User.User(request)
-    response = new_user.update(_id)
+    username = request.json['username']
+    email = request.json['email']
+    level_id = request.json['level_id']
+    password = str(db.users.find_one({'_id': ObjectId(_id), })['password'])
+    db.users.update_one(
+        {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
+            'username': username,
+            'email': email,
+            'level_id': level_id,
+            'password': password
+        }
+        })
+    response = jsonify(
+        {'message': 'User ' + _id + ' Updated Successfuly'})
+    response.status_code = 200
     return response
 
 
