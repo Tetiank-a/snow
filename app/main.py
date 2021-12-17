@@ -247,7 +247,11 @@ def get_tasks():
     json_dict = json_util.loads(response)
     i = 0
     for x in json_dict:
-        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
+        json_dict[i]['level'] = {'_id': str(
+            level['_id']), 'name': level['name']}
+        if 'level_id' in json_dict[i]:
+            del json_dict[i]['level_id']
         i = i + 1
     response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
