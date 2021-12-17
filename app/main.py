@@ -250,6 +250,7 @@ def get_tasks():
         level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
         json_dict[i]['level'] = {'_id': str(
             level['_id']), 'name': level['name']}
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
         if 'level_id' in json_dict[i]:
             del json_dict[i]['level_id']
         i = i + 1
