@@ -281,6 +281,33 @@ def get_task(id):
     response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
+@app.route('/api/tasks/info/<id>', methods=['GET'])
+@jwt_required()
+def get_task_info(id):
+    tasks = db.tasks.find({'_id': ObjectId(id), })
+    response = json_util.dumps(tasks)
+    json_dict = json_util.loads(response)
+    i = 0
+
+    for x in json_dict:
+        level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
+        json_dict[i]['level'] = {'_id': str(
+            level['_id']), 'name': level['name']}
+
+        user = db.users.find_one({'_id': ObjectId(x['user_id']), })
+        json_dict[i]['username'] = user['username']
+        
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        if 'level_id' in json_dict[i]:
+            del json_dict[i]['level_id']
+        if 'user_id' in json_dict[i]:
+            del json_dict[i]['user_id']
+        if 'rec_id' in json_dict[i]:
+            del json_dict[i]['rec_id']
+        i = i + 1
+    response = json_util.dumps(json_dict)
+    return Response(response, mimetype="application/json")
+
 
 @app.route('/api/tasks/<id>', methods=['DELETE'])
 @jwt_required()
