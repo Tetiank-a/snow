@@ -260,9 +260,24 @@ def get_tasks():
 @app.route('/api/tasks/<id>', methods=['GET'])
 @jwt_required()
 def get_task(id):
-    print(id)
-    task = db.tasks.find_one({'_id': ObjectId(id), })
-    response = json_util.dumps(task)
+    tasks = db.tasks.find({'_id': ObjectId(id), })
+    response = json_util.dumps(tasks)
+    json_dict = json_util.loads(response)
+    i = 0
+
+    for x in json_dict:
+        level = db.levels.find_one({'_id': ObjectId(x['level_id']), })
+        json_dict[i]['level'] = {'_id': str(
+            level['_id']), 'name': level['name']}
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        if 'level_id' in json_dict[i]:
+            del json_dict[i]['level_id']
+        if 'user_id' in json_dict[i]:
+            del json_dict[i]['user_id']
+        if 'rec_id' in json_dict[i]:
+            del json_dict[i]['rec_id']
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
@@ -280,9 +295,9 @@ def delete_task(id):
 def update_task(_id):
     name = request.json['name']
     link = request.json['link']
-    level_id = request.json['level_id']
-    rec_id = request.json['rec_id']
-    user_id = request.json['user_id']
+    level_id = request.json['level']['_id']
+    rec_id = str(db.tasks.find_one({'_id': ObjectId(_id), })['rec_id'])
+    user_id = str(db.tasks.find_one({'_id': ObjectId(_id), })['user_id'])
     text = request.json['text']
     if name and link and level_id and rec_id and user_id and text and _id:
         db.tasks.update_one(
