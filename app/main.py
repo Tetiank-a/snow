@@ -50,15 +50,23 @@ def login():
             ('email' in request.json)):
         # hashed_password = generate_password_hash(request.json['password'])
         new_user = db.users.find_one({"email": request.json['email']})
+        level_admin = str(db.levels.find_one({"name": "admin"})['_id'])
+        level_instructor = str(db.levels.find_one({"name": "instructor"})['_id'])
         print(new_user['password'])
         print(generate_password_hash(request.json['password']))
         print(request.json['password'])
 
        # print(check_password_hash("pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12", str("qwerty123")))
         if (new_user != None and check_password_hash(new_user['password'], request.json['password'])):
+            role = 'user'
+            if new_user['level_id'] == level_admin:
+                role = 'admin'
+            else:
+                if new_user['level_id'] == level_instructor:
+                    role = 'instructor'
             access_token = create_access_token(identity=str(new_user['_id']))
             response = jsonify(
-                {'token': access_token, '_id': str(new_user['_id'])})
+                {'token': access_token, '_id': str(new_user['_id']), 'role': role})
             response.status_code = 200
         else:
             response = jsonify({'message': str("no such user")})
