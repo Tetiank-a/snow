@@ -5,11 +5,12 @@ from bson.objectid import ObjectId
 from werkzeug.security import check_password_hash, generate_password_hash
 from DB.UsersT import do
 from werkzeug.wrappers import response
-from classes import User, Level, Record, Advice, Session, Task
+from classes import User, Level, Record, Advice, Session, Task, Location
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+
 
 
 app = Flask(__name__)
@@ -200,6 +201,51 @@ def update_level(_id):
     new_level = Level.Level(request)
     new_level.update(_id)
     return response
+
+
+# LOCATIONS
+
+@app.route('/api/locations', methods=['POST'])
+@jwt_required()
+def create_location():
+    # Receiving Data
+    new_location = Location.Location(request)
+    response = new_location.add()
+    return response
+
+
+@app.route('/api/locations', methods=['GET'])
+@jwt_required()
+def get_locations():
+    locations = db.locations.find()
+    response = json_util.dumps(locations)
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/api/locations/<id>', methods=['GET'])
+@jwt_required()
+def get_location(id):
+    print(id)
+    location = db.locations.find_one({'_id': ObjectId(id), })
+    response = json_util.dumps(location)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/api/locations/<id>', methods=['DELETE'])
+@jwt_required()
+def delete_location(id):
+    db.locations.delete_one({'_id': ObjectId(id)})
+    # TODO: do not delete if this location is used
+    response = jsonify({'message': 'Location' + id + ' Deleted Successfully'})
+    response.status_code = 200
+    return response
+
 
 
 # TASKS
