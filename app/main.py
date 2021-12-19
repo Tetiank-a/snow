@@ -447,30 +447,35 @@ def update_record(_id):
 @jwt_required()
 def create_session():
     # Receiving Data
-    rec_id = request.json['rec_id']
+    records = db.records.find()
+    tasks = db.tasks.find()
+    rec_id = str(records[0]['_id'])
     instructor_id = request.json['instructor_id']
-    task_id = request.json['task_id']
-    user_id = request.json['user_id']
+    task_id = str(tasks[0]['_id'])
+    user_id = "-"
     dtstart = request.json['dtstart']
     dtfinish = request.json['dtfinish']
+    location = {"_id": request.json['location']['_id'], "name": request.json['location']['name']}
 
-    if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
+    if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish and location:
         id = db.sessions.insert({
             'rec_id': rec_id,
             'instructor_id': instructor_id,
             'task_id': task_id,
             'user_id': user_id,
             'dtstart': dtstart,
-            'dtfinish': dtfinish
+            'dtfinish': dtfinish,
+            'location': location
         })
         response = jsonify({
             '_id': str(id),
             'rec_id': rec_id,
             'instructor_id': instructor_id,
-            'task_id': task_id,
-            'user_id': user_id,
+            'task_id': str(task_id),
+            'user_id': str(user_id),
             'dtstart': dtstart,
-            'dtfinish': dtfinish
+            'dtfinish': dtfinish,
+            'location': location
         })
         response.status_code = 201
         return response
