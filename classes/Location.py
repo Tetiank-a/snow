@@ -32,7 +32,7 @@ class Location:
     def add(self):
         response = self.isValid()
         if not (response.status_code == 400):
-            self.id = app.main.db.levels.insert(
+            self.id = app.main.db.locations.insert(
                 {'name': self.name})
             response = jsonify({
                 '_id': str(self.id),
@@ -46,13 +46,13 @@ class Location:
         if not _id:
             return app.main.not_found()
         if not (response.status_code == 400):
-            app.main.db.levels.update_one(
+            app.main.db.locations.update_one(
                 {'_id': ObjectId(_id['$oid']) if '$oid' in _id else ObjectId(_id)}, {'$set': {
                     'name': self.name
                 }
                 })
             response = jsonify(
-                {'message': 'Level' + _id + 'Updated Successfuly'})
+                {'message': 'Location' + _id + 'Updated Successfuly'})
             response.status_code = 200
         return response
 
