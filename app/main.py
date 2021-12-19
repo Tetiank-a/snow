@@ -206,14 +206,15 @@ def update_level(_id):
 @app.route('/api/tasks', methods=['POST'])
 @jwt_required()
 def create_task():
+    records = db.records.find()
     # Receiving Data
     name = request.json['name']
     link = request.json['link']
-    level_id = request.json['level_id']
-    rec_id = request.json['rec_id']
+    level_id = request.json['level']['_id']
+    rec_id = records[0]['_id']
     user_id = request.json['user_id']
     text = request.json['text']
-
+    print(rec_id)
     if link and level_id and rec_id and user_id and text and name:
         id = db.tasks.insert({
             'name': name,
@@ -227,9 +228,9 @@ def create_task():
             '_id': str(id),
             'name': name,
             'link': link,
-            'level_id': level_id,
-            'rec_id': rec_id,
-            'user_id': user_id,
+            'level_id': str(level_id),
+            'rec_id': str(rec_id),
+            'user_id': str(user_id),
             'text': text
         })
         response.status_code = 201
