@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_pymongo import PyMongo
 from flask import Flask, jsonify, request, Response
 from bson import json_util
@@ -10,6 +11,9 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+# import dateutil.parser
+
+date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 
@@ -491,6 +495,8 @@ def create_session():
         return not_found()
 
 
+
+
 @app.route('/api/sessions', methods=['GET'])
 @jwt_required()
 def get_sessions():
@@ -529,6 +535,43 @@ def get_session(id):
     print(id)
     session = db.sessions.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(session)
+    return Response(response, mimetype="application/json")
+
+
+@app.route('/api/sessions/filter', methods=['GET'])
+@jwt_required()
+def get_my_sessions():
+    # dtstart = datetime.strptime(request.json['dtstart'], date_format)
+    # dtfinish = datetime.strptime(request.json['dtfinish'], date_format)
+    location = request.json['location']
+    # "dtstart": {"$gte": dtstart}, "dtfinish": {"$lte": dtfinish},
+    sessions = db.sessions.find({"location": location})
+    
+    response = json_util.dumps(sessions)
+    json_dict = json_util.loads(response)
+    i = 0
+
+    for x in json_dict:
+        user = db.users.find_one({'_id': ObjectId(x['instructor_id']), })
+        json_dict[i]['instructor'] = {"_id": str(user['_id']), "username": user['username']}
+
+        if json_dict[i]['user_id'] != '-':
+            user = db.users.find_one({'_id': ObjectId(x['user_id']), })
+            json_dict[i]['user'] = {"_id": str(x['user_id']), "username": user['username']}
+        else:
+            json_dict[i]['user'] = {"_id": str(x['user_id']), "username": "-"}
+        
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        if 'rec_id' in json_dict[i]:
+            del json_dict[i]['rec_id']
+        if 'task_id' in json_dict[i]:
+            del json_dict[i]['task_id']
+        if 'user_id' in json_dict[i]:
+            del json_dict[i]['user_id']
+        if 'instructor_id' in json_dict[i]:
+            del json_dict[i]['instructor_id']
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 
