@@ -545,7 +545,7 @@ def get_my_sessions():
     # dtfinish = datetime.strptime(request.json['dtfinish'], date_format)
     location = request.json['location']
     # "dtstart": {"$gte": dtstart}, "dtfinish": {"$lte": dtfinish},
-    sessions = db.sessions.find({"location": location})
+    sessions = db.sessions.find({"location": location, "user_id": "-"})
     
     response = json_util.dumps(sessions)
     json_dict = json_util.loads(response)
