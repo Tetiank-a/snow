@@ -501,17 +501,23 @@ def get_sessions():
 
     for x in json_dict:
         user = db.users.find_one({'_id': ObjectId(x['instructor_id']), })
-        json_dict[i]['instructor_name'] = user['username']
+        json_dict[i]['instructor'] = {"_id": str(user['_id']), "username": user['username']}
 
         if json_dict[i]['user_id'] != '-':
             user = db.users.find_one({'_id': ObjectId(x['user_id']), })
-            json_dict[i]['user_name'] = user['username']
+            json_dict[i]['user'] = {"_id": str(x['user_id']), "username": user['username']}
+        else:
+            json_dict[i]['user'] = {"_id": str(x['user_id']), "username": "-"}
         
         json_dict[i]['_id'] = str(json_dict[i]['_id'])
         if 'rec_id' in json_dict[i]:
             del json_dict[i]['rec_id']
         if 'task_id' in json_dict[i]:
             del json_dict[i]['task_id']
+        if 'user_id' in json_dict[i]:
+            del json_dict[i]['user_id']
+        if 'instructor_id' in json_dict[i]:
+            del json_dict[i]['instructor_id']
         i = i + 1
     response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
