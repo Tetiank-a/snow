@@ -544,12 +544,12 @@ def delete_session(id):
 @app.route('/api/sessions/<_id>', methods=['PUT'])
 @jwt_required()
 def update_session(_id):
-    rec_id = request.json['rec_id']
-    instructor_id = request.json['instructor_id']
-    task_id = request.json['task_id']
+    rec_id = str(db.sessions.find_one({'_id': ObjectId(_id), })['rec_id'])
+    instructor_id = str(db.sessions.find_one({'_id': ObjectId(_id), })['instructor_id'])
+    task_id = str(db.sessions.find_one({'_id': ObjectId(_id), })['task_id'])
     user_id = request.json['user_id']
-    dtstart = request.json['dtstart']
-    dtfinish = request.json['dtfinish']
+    dtstart = str(db.sessions.find_one({'_id': ObjectId(_id), })['dtstart'])
+    dtfinish = str(db.sessions.find_one({'_id': ObjectId(_id), })['dtfinish'])
 
     if rec_id and instructor_id and task_id and user_id and dtstart and dtfinish:
         db.sessions.update_one(
