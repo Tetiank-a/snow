@@ -175,7 +175,6 @@ def create_level():
 
 
 @app.route('/api/levels', methods=['GET'])
-@jwt_required()
 def get_levels():
     levels = db.levels.find()
     response = json_util.dumps(levels)
