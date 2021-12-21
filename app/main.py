@@ -496,6 +496,42 @@ def create_session():
 
 
 
+# query
+@app.route('/api/query', methods=['POST'])
+@jwt_required()
+def create_query():
+    # Receiving Data
+    dtstart = request.json['dtstart']
+    dtfinish = request.json['dtfinish']
+    location = {"_id": request.json['location']['_id'], "name": request.json['location']['name']}
+
+    if dtstart and dtfinish and location:
+        id = db.queries.insert({
+            'dtstart': dtstart,
+            'dtfinish': dtfinish,
+            'location': location
+        })
+        response = jsonify({
+            '_id': str(id),
+            'dtstart': dtstart,
+            'dtfinish': dtfinish,
+            'location': location
+        })
+        response.status_code = 201
+        return response
+    else:
+        return not_found()
+
+
+@app.route('/api/query/<id>', methods=['GET'])
+@jwt_required()
+def get_query(id):
+    print(id)
+    session = db.queries.find_one({'_id': ObjectId(id), })
+    session['_id'] = str(session['_id'])
+    response = json_util.dumps(session)
+    
+    return Response(response, mimetype="application/json")
 
 @app.route('/api/sessions', methods=['GET'])
 @jwt_required()
