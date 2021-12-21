@@ -527,10 +527,15 @@ def create_query():
 @jwt_required()
 def get_query(id):
     print(id)
-    session = db.queries.find_one({'_id': ObjectId(id), })
-    session['_id'] = str(session['_id'])
-    response = json_util.dumps(session)
+    query = db.queries.find({'_id': ObjectId(id), })
+    response = json_util.dumps(query)
     
+    json_dict = json_util.loads(response)
+    i = 0
+    for x in json_dict:
+        json_dict[i]['_id'] = str(json_dict[i]['_id'])
+        i = i + 1
+    response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
 @app.route('/api/sessions', methods=['GET'])
