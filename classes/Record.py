@@ -10,11 +10,17 @@ class Record:
 
     def __init__(self, request):
         if (('xspeed' in request.json) and ('yspeed' in request.json) and
-                ('zspeed' in request.json) and ('angle' in request.json)):
+                ('zspeed' in request.json) and ('angle' in request.json) and
+                ('point_left_front' in request.json) and ('point_left_back' in request.json) and
+                ('point_right_front' in request.json) and ('point_right_back' in request.json)):
             self.xspeed = request.json['xspeed']
             self.yspeed = request.json['yspeed']
             self.zspeed = request.json['zspeed']
             self.angle = request.json['angle']
+            self.point_left_front = request.json['point_left_front']
+            self.point_left_back = request.json['point_left_back']
+            self.point_right_front = request.json['point_right_front']
+            self.point_right_back = request.json['point_right_back']
         else:
             self.valid = False
 
@@ -31,7 +37,9 @@ class Record:
         response = jsonify({'message': 'User is valid'})
         response.status_code = 201
         if not (isfloat(self.xspeed) and isfloat(self.yspeed) and
-                isfloat(self.zspeed) and isfloat(self.angle)):
+                isfloat(self.zspeed) and isfloat(self.angle) and
+                isfloat(self.point_left_front) and isfloat(self.point_left_back) and
+                isfloat(self.point_right_front) and isfloat(self.point_right_back)):
             response = jsonify({'message': 'Values must be float numbers'})
             response.status_code = 400
 
@@ -45,14 +53,22 @@ class Record:
                     'xspeed': [self.xspeed, ],
                     'yspeed': [self.yspeed, ],
                     'zspeed': [self.zspeed, ],
-                    'angle': [self.angle, ]
+                    'angle': [self.angle, ],
+                    'point_left_front': [self.point_left_front, ],
+                    'point_left_back': [self.point_left_back, ],
+                    'point_right_front': [self.point_right_front, ],
+                    'point_right_back': [self.point_right_back, ]
                 })
                 response = jsonify({
                     '_id': str(self.id),
                     'xspeed': self.xspeed,
                     'yspeed': self.yspeed,
                     'zspeed': self.zspeed,
-                    'angle': self.angle
+                    'angle': self.angle,
+                    'point_left_front': self.point_left_front,
+                    'point_left_back': self.point_left_back,
+                    'point_right_front': self.point_right_front,
+                    'point_right_back': self.point_right_back
                 })
                 response.status_code = 201
 
@@ -69,7 +85,11 @@ class Record:
                         'xspeed': self.xspeed,
                         'yspeed': self.yspeed,
                         'zspeed': self.zspeed,
-                        'angle': self.angle
+                        'angle': self.angle,
+                        'point_left_front': self.point_left_front,
+                        'point_left_back': self.point_left_back,
+                        'point_right_front': self.point_right_front,
+                        'point_right_back': self.point_right_back
                     }})
                 response = jsonify(
                     {'message': 'Record' + _id + 'Updated Successfuly'})
