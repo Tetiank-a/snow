@@ -5,29 +5,10 @@ from operator import eq
 
 
 def add(x, y, z, angle, p1, p2, p3, p4):  # add data from Arduino
-    with open('predict/data.csv', 'a+', newline='') as dataset:
+    with open('predict2/data.csv', 'a+', newline='') as dataset:
         csv_writer = writer(dataset)
         csv_writer.writerow([x, y, z, angle, p1, p2, p3, p4])
 
-
-def predict(x : float, y : float, z : float, angle : int):
-    file = open('predict/data.csv')
-    csvreader = csv.reader(file)
-    min_dif = 10000
-    min_angle = 360
-    for data in csvreader:
-        dif = sqrt((float(data[0]) - x) * (float(data[0]) - x) +
-                   (float(data[1]) - y) * (float(data[1]) - y) +
-                   (float(data[2]) - z) * (float(data[2]) - z))
-        if dif < min_dif:
-            min_dif = dif
-            min_angle = data[3]
-            
-    s = int(min_angle) - int(angle)
-    if s < 0:
-        return '- angle on ' + str(int(s) * -1) + ' degrees'
-    else:
-        return '+ angle on ' + str(s) + ' degrees'
 
 def predict2(x : float, y : float, z : float, angle : int, point_left_front : float, point_left_back : float,
  point_right_front : float, point_right_back : float):
@@ -39,8 +20,8 @@ def predict2(x : float, y : float, z : float, angle : int, point_left_front : fl
     dif_y = 0
     dif_z = 0
 
-    eq_left = float(point_left_front / point_left_back)
-    eq_right = float(point_right_front / point_right_back)
+    eq_left = float(point_left_front) / float(point_left_back)
+    eq_right = float(point_right_front) / float(point_right_back)
 
     eq_left_change = 1;
     eq_right_change = 1;
@@ -55,15 +36,15 @@ def predict2(x : float, y : float, z : float, angle : int, point_left_front : fl
             dif_y = (float(data[1]) - y) * (float(data[1]) - y)
             dif_z = (float(data[2]) - z) * (float(data[2]) - z)
 
-            eq_left_change = float(eq_left / float(data[4] / data[5]))
-            eq_right_change = float(eq_right / float(data[6] / data[7]))
+            eq_left_change = float(eq_left / float(float(data[4]) / float(data[5])))
+            eq_right_change = float(eq_right / float(float(data[6]) / float(data[7])))
     
-    adv1 = ''
-    adv2 = ''
-    adv3 = ''
-    adv4 = ''
+    adv1 = '-'
+    adv2 = '-'
+    adv3 = '-'
+    adv4 = '-'
 
-    print("------------------------------------" + dif)
+    print("------------------------------------" + str(dif))
     if (min_dif >= 40):
         if dif_x > dif_y and dif_x > dif_z:
             adv1 = 'decrease horizontal speed - try to push more on the leg that is oposite to your movement side'
@@ -88,5 +69,5 @@ def predict2(x : float, y : float, z : float, angle : int, point_left_front : fl
     else:
         adv4 = '+ angle on ' + str(s) + ' degrees'
 
-    return adv1 + '\n' + adv2 + '\n' + adv3 + '\n' + adv4
+    return "1) " + adv1 + ";      2) " + adv2 + ';      3)' + adv3 + ';      4)' + adv4
 # predict(1, 2, 3, 4)
