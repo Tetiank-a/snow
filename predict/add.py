@@ -3,6 +3,8 @@ import csv
 from math import sqrt
 from operator import eq
 
+from flask import jsonify
+
 
 def add(x, y, z, angle, p1, p2, p3, p4):  # add data from Arduino
     with open('predict2/data.csv', 'a+', newline='') as dataset:
@@ -69,5 +71,4 @@ def predict2(x : float, y : float, z : float, angle : int, point_left_front : fl
     else:
         adv4 = '+ angle on ' + str(s) + ' degrees'
 
-    return "1) " + adv1 + ";      2) " + adv2 + ';      3)' + adv3 + ';      4)' + adv4
-# predict(1, 2, 3, 4)
+    return jsonify({"1" : adv1, "2" : adv2, "3" : adv3, "4" : adv4})

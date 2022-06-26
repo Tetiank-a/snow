@@ -11,6 +11,8 @@ import os
 from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
+
+from predict.add import predict2
 # import dateutil.parser
 
 date_format = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -56,11 +58,8 @@ def login():
         new_user = db.users.find_one({"email": request.json['email']})
         level_admin = str(db.levels.find_one({"name": "admin"})['_id'])
         level_instructor = str(db.levels.find_one({"name": "instructor"})['_id'])
-        print(new_user['password'])
-        print(generate_password_hash(request.json['password']))
-        print(request.json['password'])
+        
 
-       # print(check_password_hash("pbkdf2:sha256:260000$ZCfafTi6ivBJcM7Y$eb7955455f88c8e86000abcb3d195f059b2a6befe3715b0b23b7eb9c918f1a12", str("qwerty123")))
         if (new_user != None and check_password_hash(new_user['password'], request.json['password'])):
             role = 'user'
             if new_user['level_id'] == level_admin:
@@ -190,7 +189,6 @@ def get_levels():
 @app.route('/api/levels/<id>', methods=['GET'])
 @jwt_required()
 def get_level(id):
-    print(id)
     level = db.levels.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(level)
     return Response(response, mimetype="application/json")
@@ -242,7 +240,6 @@ def get_locations():
 @app.route('/api/locations/<id>', methods=['GET'])
 @jwt_required()
 def get_location(id):
-    print(id)
     location = db.locations.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(location)
     return Response(response, mimetype="application/json")
@@ -271,7 +268,6 @@ def create_task():
     rec_id = records[0]['_id']
     user_id = request.json['user_id']
     text = request.json['text']
-    print(rec_id)
     if link and level_id and rec_id and user_id and text and name:
         id = db.tasks.insert({
             'name': name,
@@ -430,7 +426,6 @@ def get_records():
 @app.route('/api/records/<id>', methods=['GET'])
 @jwt_required()
 def get_record(id):
-    print(id)
     record = db.records.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(record)
     return Response(response, mimetype="application/json")
@@ -525,7 +520,6 @@ def create_query():
 @app.route('/api/query/<id>', methods=['GET'])
 @jwt_required()
 def get_query(id):
-    print(id)
     query = db.queries.find({'_id': ObjectId(id), })
     response = json_util.dumps(query)
     
@@ -568,11 +562,18 @@ def get_sessions():
     response = json_util.dumps(json_dict)
     return Response(response, mimetype="application/json")
 
+@app.route('/api/sessions/all', methods=['GET'])
+@jwt_required()
+def get_all_sessions():
+    sessions = db.sessions.find()
+    
+    response = json_util.dumps(sessions)
+    return Response(response, mimetype="application/json")
+
 
 @app.route('/api/sessions/<id>', methods=['GET'])
 @jwt_required()
 def get_session(id):
-    print(id)
     session = db.sessions.find_one({'_id': ObjectId(id), })
     response = json_util.dumps(session)
     return Response(response, mimetype="application/json")
@@ -671,6 +672,20 @@ def recieve_advice():
     new_advice = Advice.Advice(request)
     response = new_advice.get_advice()
     #response = json_util.dumps(result_data)
+    return response
+
+@app.route('/api/advice/now', methods=['POST'])  # TODO: take id
+@jwt_required()
+def recieve_advice_now():
+    response = predict2(float(request.json['xspeed']),
+                                                   float(request.json['yspeed']),
+                                                   float(request.json['zspeed']),
+                                                   int(request.json['angle']),
+                                                   float(request.json['point_left_front']),
+                                                   float(request.json['point_left_back']),
+                                                   float(request.json['point_right_front']),
+                                                   float(request.json['point_right_back']))
+    response.status_code = 200
     return response
 
 
